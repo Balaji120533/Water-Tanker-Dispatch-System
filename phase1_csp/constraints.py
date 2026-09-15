@@ -64,3 +64,30 @@ def refill_ok(assignment: dict, tanker_id: str, slot: int, value, num_slots: int
             return False  # this slot delivered -> next slot must be idle
 
     return True
+
+
+def no_double_booking_ok(assignment: dict, tanker_id: str, slot: int, value, all_tanker_ids: list) -> bool:
+    """
+    Constraint (c): no tanker double-booked in a slot.
+
+    Variables are already (tanker_id, slot) pairs, so a single tanker
+    structurally cannot hold two zone values in the same slot — that
+    collision is impossible in this representation. The real resource
+    collision left to prevent is the other direction: two DIFFERENT
+    tankers both dispatched to the SAME zone in the SAME slot, which would
+    double-deliver one zone while other entitled zones go unserved that
+    slot. This is a BINARY constraint across tankers sharing a slot,
+    checked the same way as refill_ok: against whatever is already in the
+    partial assignment.
+    """
+    if value is None:
+        return True  # idle never conflicts with anything
+
+    for other_id in all_tanker_ids:
+        if other_id == tanker_id:
+            continue
+        other_key = (other_id, slot)
+        if other_key in assignment and assignment[other_key] == value:
+            return False
+
+    return True
