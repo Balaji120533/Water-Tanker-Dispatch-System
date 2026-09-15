@@ -1,0 +1,50 @@
+# Water Tanker Dispatch — Entitlement Knowledge Base
+#
+# This file is the SOURCE OF TRUTH for entitlement and priority rules.
+# It is parsed at runtime, not hardcoded in Python, so a reviewer can open
+# this file and check exactly what rule produced a given decision.
+#
+# --------------------------------------------------------------------------
+# SYNTAX
+# --------------------------------------------------------------------------
+# Facts:
+#   predicate(arg1, arg2, ...).
+#
+# Rules (definite clauses, Horn form):
+#   head(args) :- body1(args), body2(args), ... .
+#   Read ":-" as "if". A comma in the body means AND.
+#   Variables start with an uppercase letter (Prolog convention): Zone, X.
+#   Constants (zone names, numbers) are lowercase / numeric atoms.
+#
+# Comments start with '#' and run to end of line. Blank lines are ignored.
+#
+# --------------------------------------------------------------------------
+# THRESHOLDS (confirmed by project owner — do not change without asking)
+# --------------------------------------------------------------------------
+#   entitled            : tank_level < 30   OR  days_since_delivery > 3
+#   high_priority        : tank_level < 10   OR  has_critical_facility(Zone)
+#
+# These are encoded below as arithmetic comparisons via helper predicates
+# lt30(Level), gt3(Days), lt10(Level) — the inference engine evaluates
+# these as built-in arithmetic checks rather than needing every possible
+# numeric fact enumerated (see engine.py: BUILTIN_PREDICATES).
+
+# --------------------------------------------------------------------------
+# RULES
+# --------------------------------------------------------------------------
+
+# A zone is entitled to water if its tank level is critically low.
+entitled(Zone) :- tank_level(Zone, Level), lt30(Level).
+
+# A zone is entitled to water if it has gone too long without a delivery,
+# regardless of what the last reported level was (guards against stale
+# good-looking reports masking real neglect).
+entitled(Zone) :- days_since_delivery(Zone, Days), gt3(Days).
+
+# An entitled zone is HIGH PRIORITY if its level has dropped further,
+# into severe shortage.
+high_priority(Zone) :- entitled(Zone), tank_level(Zone, Level), lt10(Level).
+
+# An entitled zone is HIGH PRIORITY if it hosts a critical facility
+# (school, hospital, clinic) irrespective of exact severity.
+high_priority(Zone) :- entitled(Zone), has_critical_facility(Zone).

@@ -1,0 +1,54 @@
+# Synthetic zone condition reports for the Phase 0 demo.
+# These are NOT real measurements — they are illustrative inputs so the
+# entitlement engine has something to reason over. Replace with real /
+# operator-entered data in a later phase.
+#
+# Facts only (no rules) — same syntax as knowledge_base.txt.
+
+tank_level(thiruvotriyur, 18).
+days_since_delivery(thiruvotriyur, 2).
+
+tank_level(manali, 45).
+days_since_delivery(manali, 5).
+
+tank_level(madhavaram, 60).
+days_since_delivery(madhavaram, 1).
+
+tank_level(tondiarpet, 8).
+days_since_delivery(tondiarpet, 4).
+has_critical_facility(tondiarpet).
+
+tank_level(royapuram, 25).
+days_since_delivery(royapuram, 0).
+
+tank_level(thiruvika_nagar, 50).
+days_since_delivery(thiruvika_nagar, 1).
+has_critical_facility(thiruvika_nagar).
+
+tank_level(ambattur, 70).
+days_since_delivery(ambattur, 0).
+
+tank_level(anna_nagar, 33).
+days_since_delivery(anna_nagar, 2).
+
+tank_level(teynampet, 5).
+days_since_delivery(teynampet, 1).
+
+tank_level(kodambakkam, 40).
+days_since_delivery(kodambakkam, 6).
+
+tank_level(valasaravakkam, 55).
+days_since_delivery(valasaravakkam, 1).
+
+tank_level(alandur, 29).
+days_since_delivery(alandur, 3).
+
+tank_level(adyar, 80).
+days_since_delivery(adyar, 0).
+has_critical_facility(adyar).
+
+tank_level(perungudi, 22).
+days_since_delivery(perungudi, 2).
+
+tank_level(sozhanganallur, 90).
+days_since_delivery(sozhanganallur, 0).
