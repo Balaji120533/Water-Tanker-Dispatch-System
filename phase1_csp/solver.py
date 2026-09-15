@@ -11,6 +11,7 @@ compare against.
 from __future__ import annotations
 from problem import CSPProblem
 from constraints import refill_ok, no_double_booking_ok
+from heuristics import select_var_mrv, select_var_mrv_degree, order_values_lcv
 
 
 class SolveStats:
@@ -32,7 +33,7 @@ def is_consistent(problem: CSPProblem, assignment: dict, var: tuple, value) -> b
     return True
 
 
-def select_unassigned_variable(problem: CSPProblem, assignment: dict):
+def select_unassigned_variable_plain(problem: CSPProblem, assignment: dict):
     """Plain ordering: first variable (in declaration order) not yet assigned."""
     for var in problem.variables:
         if var not in assignment:
@@ -40,22 +41,37 @@ def select_unassigned_variable(problem: CSPProblem, assignment: dict):
     return None
 
 
-def order_domain_values(problem: CSPProblem, var: tuple):
+def order_domain_values_plain(problem: CSPProblem, assignment: dict, var: tuple):
     """Plain ordering: domain values in the order they were pruned to."""
     return list(problem.domains[var])
 
 
-def backtrack(problem: CSPProblem, assignment: dict, stats: SolveStats):
+# Heuristic configuration: which variable-selection and value-ordering
+# function to use. Selected by name so benchmark.py can loop over
+# combinations without duplicating the backtracking loop itself.
+VAR_SELECTORS = {
+    "none": select_unassigned_variable_plain,
+    "mrv": lambda problem, assignment: select_var_mrv(problem, assignment),
+    "mrv+degree": lambda problem, assignment: select_var_mrv_degree(problem, assignment),
+}
+
+VALUE_ORDERERS = {
+    "none": order_domain_values_plain,
+    "lcv": lambda problem, assignment, var: order_values_lcv(problem, assignment, var),
+}
+
+
+def backtrack(problem: CSPProblem, assignment: dict, stats: SolveStats, var_selector, value_orderer):
     stats.nodes_explored += 1
 
-    var = select_unassigned_variable(problem, assignment)
+    var = var_selector(problem, assignment)
     if var is None:
         return dict(assignment)  # every variable assigned -> solution
 
-    for value in order_domain_values(problem, var):
+    for value in value_orderer(problem, assignment, var):
         if is_consistent(problem, assignment, var, value):
             assignment[var] = value
-            result = backtrack(problem, assignment, stats)
+            result = backtrack(problem, assignment, stats, var_selector, value_orderer)
             if result is not None:
                 return result
             del assignment[var]
@@ -63,7 +79,15 @@ def backtrack(problem: CSPProblem, assignment: dict, stats: SolveStats):
     return None  # no value worked -> backtrack
 
 
-def solve(problem: CSPProblem) -> tuple[dict | None, SolveStats]:
+def solve(
+    problem: CSPProblem, var_heuristic: str = "none", value_heuristic: str = "none"
+) -> tuple[dict | None, SolveStats]:
+    """
+    var_heuristic: "none" | "mrv" | "mrv+degree"
+    value_heuristic: "none" | "lcv"
+    """
     stats = SolveStats()
-    result = backtrack(problem, {}, stats)
+    var_selector = VAR_SELECTORS[var_heuristic]
+    value_orderer = VALUE_ORDERERS[value_heuristic]
+    result = backtrack(problem, {}, stats, var_selector, value_orderer)
     return result, stats
