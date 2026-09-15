@@ -10,7 +10,7 @@ compare against.
 
 from __future__ import annotations
 from problem import CSPProblem
-from constraints import refill_ok
+from constraints import refill_ok, no_double_booking_ok
 
 
 class SolveStats:
@@ -25,6 +25,9 @@ def is_consistent(problem: CSPProblem, assignment: dict, var: tuple, value) -> b
     """
     tanker_id, slot = var
     if not refill_ok(assignment, tanker_id, slot, value, problem.num_slots):
+        return False
+    all_tanker_ids = [t.id for t in problem.tankers]
+    if not no_double_booking_ok(assignment, tanker_id, slot, value, all_tanker_ids):
         return False
     return True
 
