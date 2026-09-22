@@ -1,7 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import DispatchMap from "./components/DispatchMap";
 import ScheduleTable from "./components/ScheduleTable";
-import { generateSchedule, disruptBreakdown, disruptUrgent } from "./api";
+import { generateSchedule, disruptBreakdown, disruptUrgent, fetchStatus } from "./api";
 
 export default function App() {
   const [data, setData] = useState(null);
@@ -41,6 +41,36 @@ export default function App() {
       setLoading(false);
     }
   }, []);
+
+  // Poll for driver completions. Only the completed_slots flags are merged
+  // in -- the schedule itself is left alone so an in-flight repair diff
+  // highlight isn't wiped out by a poll landing mid-animation.
+  useEffect(() => {
+    if (!data) return;
+    const id = setInterval(async () => {
+      try {
+        const status = await fetchStatus();
+        if (!status?.schedule) return;
+        setData((prev) => {
+          if (!prev) return prev;
+          const completedBy = Object.fromEntries(
+            status.schedule.map((r) => [r.tanker_id, r.completed_slots])
+          );
+          return {
+            ...prev,
+            schedule: prev.schedule.map((row) => ({
+              ...row,
+              completed_slots: completedBy[row.tanker_id] ?? [],
+            })),
+          };
+        });
+      } catch {
+        // Transient failure (backend restarting, etc.) -- keep showing the
+        // last known state rather than blanking the dashboard.
+      }
+    }, 3000);
+    return () => clearInterval(id);
+  }, [data !== null]);
 
   const unscheduledZones =
     data?.zones.filter(

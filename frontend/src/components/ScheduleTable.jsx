@@ -20,6 +20,7 @@ export default function ScheduleTable({ schedule, numSlots, changedCells }) {
             {row.slots.map((zone, slot) => {
               const cellKey = `${row.tanker_id}-${slot}`;
               const changed = changedCells?.has(cellKey);
+              const done = row.completed_slots?.includes(slot);
               return (
                 <td
                   key={slot}
@@ -27,7 +28,14 @@ export default function ScheduleTable({ schedule, numSlots, changedCells }) {
                     changed ? "bg-yellow-200" : ""
                   }`}
                 >
-                  {zone ?? <span className="text-gray-300">idle</span>}
+                  {zone ? (
+                    <span className={done ? "text-green-700" : ""}>
+                      {done && <span className="mr-1">✓</span>}
+                      <span className={done ? "line-through" : ""}>{zone}</span>
+                    </span>
+                  ) : (
+                    <span className="text-gray-300">idle</span>
+                  )}
                 </td>
               );
             })}

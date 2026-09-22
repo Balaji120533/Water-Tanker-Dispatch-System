@@ -27,7 +27,10 @@ SOURCE_STATIONS: dict[str, tuple[float, float]] = {
     "station_b": (13.10, 80.28),   # royapuram / tondiarpet area
     "station_c": (13.05, 80.24),   # teynampet / kodambakkam area
     "station_d": (13.00, 80.20),   # alandur area
-    "station_e": (12.97, 80.24),   # perungudi area
+    # Moved from (12.97, 80.24), which sat ~226 m from Perungudi's centre --
+    # close enough that both snapped to the same road node, making that
+    # route zero-length with nothing to draw.
+    "station_e": (12.94, 80.21),   # south of perungudi
 }
 
 # Bounding box covering all zones + stations with a small margin, used to
