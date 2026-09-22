@@ -10,7 +10,7 @@ compare against.
 
 from __future__ import annotations
 from problem import CSPProblem
-from constraints import refill_ok, no_double_booking_ok
+from constraints import refill_ok, no_double_booking_ok, zone_not_oversupplied_ok
 from heuristics import select_var_mrv, select_var_mrv_degree, order_values_lcv
 
 
@@ -29,6 +29,8 @@ def is_consistent(problem: CSPProblem, assignment: dict, var: tuple, value) -> b
         return False
     all_tanker_ids = [t.id for t in problem.tankers]
     if not no_double_booking_ok(assignment, tanker_id, slot, value, all_tanker_ids):
+        return False
+    if not zone_not_oversupplied_ok(problem, assignment, tanker_id, slot, value):
         return False
     return True
 

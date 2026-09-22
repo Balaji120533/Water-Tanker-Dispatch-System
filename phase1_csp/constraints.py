@@ -14,21 +14,32 @@ from problem import CSPProblem
 
 def apply_capacity_constraint(problem: CSPProblem) -> None:
     """
-    Constraint (a): a tanker can only be assigned to a zone if its capacity
-    is enough to cover that zone's water need.
+    Constraint (a): a tanker may only be sent to a zone it can usefully
+    supply -- i.e. it must carry a non-zero load.
 
-    This is a UNARY constraint (it only involves one variable's value at a
-    time — the zone assigned to a single (tanker, slot) pair), so instead of
-    checking it during search we prune it directly out of each variable's
-    domain up front. None (idle) always stays a valid domain value: idling
-    trivially cannot violate a capacity constraint.
+    NOTE on the relaxation: this originally pruned any zone whose need
+    exceeded a single tanker's capacity, which made a 10,000L zone
+    invisible to every 9,000L tanker. That directly contradicted
+    constraint (d), which exists precisely so several deliveries can
+    accumulate to cover a large zone -- the result was that a zone bigger
+    than the largest FREE tanker became silently unservable even when two
+    trips would have covered it comfortably.
+
+    A zone's need is met by the SUM of its deliveries, so capacity is
+    enforced by (d) (never oversupply) rather than by pruning here. Every
+    tanker can carry water to every zone; what differs is how many trips
+    are needed.
+
+    Kept as a domain-pruning pass (rather than deleted) because it remains
+    the right place for genuinely unary restrictions, and the benchmark
+    tables reference this stage.
     """
     for (tanker_id, slot), domain in problem.domains.items():
         tanker = problem.tanker_by_id(tanker_id)
         problem.domains[(tanker_id, slot)] = [
             zone_name
             for zone_name in domain
-            if zone_name is None or problem.zone_by_name(zone_name).need_liters <= tanker.capacity_liters
+            if zone_name is None or tanker.capacity_liters > 0
         ]
 
 
@@ -62,6 +73,46 @@ def refill_ok(assignment: dict, tanker_id: str, slot: int, value, num_slots: int
         next_value = assignment[next_key]
         if value is not None and next_value is not None:
             return False  # this slot delivered -> next slot must be idle
+
+    return True
+
+
+def zone_not_oversupplied_ok(problem, assignment: dict, tanker_id: str, slot: int, value) -> bool:
+    """
+    Constraint (d): a zone receives no more water than it actually needs.
+
+    Without this, nothing stopped the solver parking ONE zone in every
+    available slot while other entitled zones got nothing -- the schedule
+    was "valid" under (a)-(c) but useless, and made the fairness claim
+    impossible to satisfy.
+
+    A zone may legitimately need more than one delivery: a 10,000L zone
+    cannot be covered by a single 9,000L tanker, so forbidding a second
+    visit outright would make it permanently unservable. The rule is
+    therefore about VOLUME, not visit count -- deliveries to a zone may
+    continue until its need is met, and then must stop.
+
+    Concretely: the assigned tankers' capacities, summed over the zone's
+    deliveries, may not exceed its need by a full extra delivery. We allow
+    the last delivery to overshoot (you cannot part-fill a tanker run), but
+    once need is already covered, another delivery is pure waste.
+    """
+    if value is None:
+        return True  # idle supplies nothing
+
+    zone = problem.zone_by_name(value)
+    tanker = problem.tanker_by_id(tanker_id)
+
+    supplied = 0
+    for (other_tanker, other_slot), other_value in assignment.items():
+        if (other_tanker, other_slot) == (tanker_id, slot):
+            continue
+        if other_value == value:
+            supplied += problem.tanker_by_id(other_tanker).capacity_liters
+
+    # If existing deliveries already cover the need, this one is surplus.
+    if supplied >= zone.need_liters:
+        return False
 
     return True
 

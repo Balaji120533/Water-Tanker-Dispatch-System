@@ -1,0 +1,19 @@
+# Python 3.11
+
+# Logic engine, CSP solver, routing -- all written from scratch, these are
+# only the supporting libraries.
+networkx==3.5
+osmnx==2.1.1          # Chennai road network from OpenStreetMap
+folium==0.20.0        # static route map output (phase2 visualize.py)
+
+# Backend API
+fastapi==0.111.0
+uvicorn==0.29.0
+pydantic==2.7.1
+
+# LLM layer (parsing + explanation only -- never decides)
+groq==1.7.0
+python-dotenv==1.0.1  # loads GROQ_API_KEY from .env, never hardcoded
+
+# Tests
+pytest==9.1.1
