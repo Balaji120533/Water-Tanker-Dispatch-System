@@ -17,6 +17,12 @@ export function generateSchedule() {
   return post("/api/generate");
 }
 
+export async function fetchStatus() {
+  const res = await fetch(`${BASE_URL}/api/status`);
+  if (!res.ok) throw new Error("Could not fetch status");
+  return res.json();
+}
+
 export function disruptBreakdown(tankerId) {
   return post("/api/disrupt/breakdown", { tanker_id: tankerId });
 }

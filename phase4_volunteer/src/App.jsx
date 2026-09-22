@@ -1,158 +1,155 @@
-import { useState, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
 const API_BASE = "http://localhost:8000";
 
-const CONDITION_LABELS = {
-  empty: "Empty",
-  very_low: "Very low",
-  low: "Low",
-  ok: "OK, some water left",
-  full: "Full",
+const GREETING = {
+  role: "assistant",
+  kind: "text",
+  text: "Hello! Tell me about your area's water situation — for example, \"the tank in Manali is almost empty\" — and I'll check whether you're due a delivery.",
 };
 
 export default function App() {
-  const [zones, setZones] = useState([]);
-  const [conditions, setConditions] = useState([]);
-  const [zone, setZone] = useState("");
-  const [condition, setCondition] = useState("");
-  const [result, setResult] = useState(null);
-  const [error, setError] = useState(null);
+  const [messages, setMessages] = useState([GREETING]);
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const bottomRef = useRef(null);
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/volunteer/zones`)
-      .then((r) => r.json())
-      .then((data) => {
-        setZones(data.zones);
-        setConditions(data.conditions);
-        setZone(data.zones[0] ?? "");
-        setCondition(data.conditions[0] ?? "");
-      })
-      .catch(() => setError("Could not reach the dispatch system. Try again shortly."));
-  }, []);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
-  const handleSubmit = async (e) => {
+  const send = async (e) => {
     e.preventDefault();
+    const text = input.trim();
+    if (!text || loading) return;
+
+    setMessages((m) => [...m, { role: "user", kind: "text", text }]);
+    setInput("");
     setLoading(true);
-    setError(null);
-    setResult(null);
+
     try {
-      const res = await fetch(`${API_BASE}/api/volunteer/report`, {
+      const res = await fetch(`${API_BASE}/api/volunteer/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ zone_name: zone, condition }),
+        body: JSON.stringify({ message: text }),
       });
+      const data = await res.json();
+
       if (!res.ok) {
-        const detail = await res.json().catch(() => ({}));
-        throw new Error(detail.detail || "Something went wrong. Please try again.");
+        setMessages((m) => [
+          ...m,
+          { role: "assistant", kind: "text", text: data.detail || "Something went wrong. Please try again." },
+        ]);
+      } else {
+        setMessages((m) => [...m, { role: "assistant", kind: "decision", data }]);
       }
-      setResult(await res.json());
-    } catch (err) {
-      setError(err.message);
+    } catch {
+      setMessages((m) => [
+        ...m,
+        { role: "assistant", kind: "text", text: "Could not reach the dispatch system. Please try again shortly." },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-blue-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-md p-6 w-full max-w-md">
-        <h1 className="text-xl font-semibold text-gray-900 mb-1">Report water condition</h1>
-        <p className="text-sm text-gray-500 mb-6">
-          Tell us about your area's water tank so we can check if you're due a delivery.
-        </p>
+    <div className="min-h-screen bg-slate-100 flex flex-col">
+      <header className="bg-white border-b border-slate-200 px-4 py-3">
+        <h1 className="text-base font-semibold text-slate-900">Water help</h1>
+        <p className="text-xs text-slate-500">Report your area's water condition</p>
+      </header>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Your area</label>
-            <select
-              value={zone}
-              onChange={(e) => setZone(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-            >
-              {zones.map((z) => (
-                <option key={z} value={z}>
-                  {z}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              How much water is left in the tank?
-            </label>
-            <select
-              value={condition}
-              onChange={(e) => setCondition(e.target.value)}
-              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-            >
-              {conditions.map((c) => (
-                <option key={c} value={c}>
-                  {CONDITION_LABELS[c] ?? c}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading || !zone || !condition}
-            className="w-full bg-blue-600 text-white rounded-md py-2.5 text-sm font-medium disabled:opacity-50"
-          >
-            {loading ? "Checking..." : "Submit report"}
-          </button>
-        </form>
-
-        {error && (
-          <div className="mt-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-md">
-            {error}
-          </div>
+      <main className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        {messages.map((m, i) =>
+          m.kind === "decision" ? (
+            <DecisionBubble key={i} data={m.data} />
+          ) : (
+            <TextBubble key={i} role={m.role} text={m.text} />
+          )
         )}
+        {loading && <TextBubble role="assistant" text="Checking..." muted />}
+        <div ref={bottomRef} />
+      </main>
 
-        {result && <ResultCard result={result} />}
+      <form onSubmit={send} className="bg-white border-t border-slate-200 p-3 flex gap-2">
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Type your message..."
+          className="flex-1 border border-slate-300 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          type="submit"
+          disabled={loading || !input.trim()}
+          className="bg-blue-600 text-white rounded-full px-5 py-2.5 text-sm font-medium disabled:opacity-40"
+        >
+          Send
+        </button>
+      </form>
+    </div>
+  );
+}
+
+function TextBubble({ role, text, muted }) {
+  const isUser = role === "user";
+  return (
+    <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+      <div
+        className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
+          isUser
+            ? "bg-blue-600 text-white rounded-br-sm"
+            : `bg-white text-slate-700 rounded-bl-sm border border-slate-200 ${muted ? "italic text-slate-400" : ""}`
+        }`}
+      >
+        {text}
       </div>
     </div>
   );
 }
 
-function ResultCard({ result }) {
-  const badgeColor = !result.entitled
-    ? "bg-gray-100 text-gray-700"
-    : result.high_priority
-    ? "bg-red-100 text-red-700"
-    : "bg-green-100 text-green-700";
-
-  const badgeText = !result.entitled
-    ? "Not currently entitled"
-    : result.high_priority
-    ? "High priority"
-    : "Entitled";
+function DecisionBubble({ data }) {
+  const badge = !data.entitled
+    ? { cls: "bg-slate-100 text-slate-600", label: "Not currently entitled" }
+    : data.high_priority
+    ? { cls: "bg-red-100 text-red-700", label: "High priority" }
+    : { cls: "bg-green-100 text-green-700", label: "Entitled" };
 
   return (
-    <div className="mt-5 border border-gray-200 rounded-lg p-4">
-      <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${badgeColor}`}>
-        {badgeText}
-      </span>
+    <div className="flex justify-start">
+      <div className="max-w-[85%] bg-white border border-slate-200 rounded-2xl rounded-bl-sm px-4 py-3">
+        <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${badge.cls}`}>
+          {badge.label}
+        </span>
 
-      <p className="text-sm text-gray-700 mt-3">
-        {result.entitled
-          ? `${result.zone_name} qualifies for a water delivery based on the reported condition.`
-          : `Based on the reported condition, ${result.zone_name} does not currently meet the entitlement criteria.`}
-      </p>
+        <p className="text-sm text-slate-700 mt-2">{data.explanation}</p>
 
-      {result.entitled && (
-        <p className="text-sm text-gray-600 mt-2">
-          {result.estimated_slot
-            ? `Scheduled today: tanker ${result.estimated_slot.tanker_id}, slot ${result.estimated_slot.slot}.`
-            : result.estimated_slot_note}
-        </p>
-      )}
+        {data.entitled && (
+          <p className="text-sm text-slate-500 mt-2">
+            {data.estimated_slot
+              ? `Scheduled today: tanker ${data.estimated_slot.tanker_id}, slot ${data.estimated_slot.slot}.`
+              : data.estimated_slot_note}
+          </p>
+        )}
 
-      <details className="mt-3">
-        <summary className="text-xs text-gray-400 cursor-pointer">Why? (technical explanation)</summary>
-        <pre className="text-xs text-gray-500 mt-2 whitespace-pre-wrap">{result.reason}</pre>
-      </details>
+        <details className="mt-2">
+          <summary className="text-xs text-slate-400 cursor-pointer">
+            What I understood / full derivation
+          </summary>
+          <div className="mt-2 text-xs text-slate-500">
+            <p className="mb-1">
+              Area: <strong>{data.understood.zone_name}</strong> · Tank:{" "}
+              <strong>{data.understood.tank_level_percent}%</strong>
+              {data.understood.days_since_delivery != null && (
+                <> · {data.understood.days_since_delivery} days since delivery</>
+              )}
+            </p>
+            {data.proof_trace && (
+              <pre className="whitespace-pre-wrap bg-slate-50 rounded p-2 mt-1">{data.proof_trace}</pre>
+            )}
+          </div>
+        </details>
+      </div>
     </div>
   );
 }

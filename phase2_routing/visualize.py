@@ -15,10 +15,13 @@ from zones_data import SOURCE_STATIONS, ZONE_COORDS
 from astar import astar_path
 from travel_times import build_travel_time_matrix
 from sequencing import multi_stop_leg_cost, hill_climb
+from route_geometry import _path_to_coords
 
 
 def _node_path_to_latlon(graph, node_path):
-    return [(graph.nodes[n]["y"], graph.nodes[n]["x"]) for n in node_path]
+    # Expands each edge into its true road shape -- node-to-node lines
+    # would cut corners, since OSMnx only places nodes at intersections.
+    return _path_to_coords(graph, node_path)
 
 
 def main():
