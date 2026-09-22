@@ -14,6 +14,7 @@ import sys
 import os
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "phase1_csp"))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "phase0_entitlement"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from fastapi import FastAPI, HTTPException
@@ -28,11 +29,38 @@ from solver import solve as csp_solve
 from min_conflicts import repair as run_repair, total_conflicts
 from disruptions import tanker_breakdown, urgent_request
 
+from logic import Clause, Term
+from parser import parse_kb
+from engine import Engine as EntitlementEngine
+
+ENTITLEMENT_KB_PATH = os.path.join(
+    os.path.dirname(__file__), "..", "..", "phase0_entitlement", "knowledge_base.txt"
+)
+ENTITLEMENT_RULES = parse_kb(ENTITLEMENT_KB_PATH)
+
+# Fixed lookup table, NOT an LLM/NL parser (Rule 2: the LLM never decides
+# entitlement; it only ever produces structured facts). Phase 5 will
+# replace this dropdown-driven lookup with real NL parsing that still
+# outputs the same tank_level/days_since_delivery facts for this SAME
+# logic engine to decide on -- the engine call below does not change.
+CONDITION_TO_TANK_LEVEL = {
+    "empty": 5,
+    "very_low": 15,
+    "low": 25,
+    "ok": 60,
+    "full": 95,
+}
+
 app = FastAPI(title="Water Tanker Dispatch API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:5173",  # dispatcher dashboard (phase3)
+        "http://localhost:5175",  # volunteer view (phase4)
+        "http://localhost:5176",  # driver view (phase4)
+        "http://localhost:3000",
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -115,6 +143,116 @@ def disrupt_breakdown(req: BreakdownRequest):
         ],
         "repair_steps": steps,
     }
+
+
+ENTITLED_ZONE_NAMES = [z.name for z in build_problem().zones]
+
+
+class VolunteerReport(BaseModel):
+    zone_name: str
+    condition: str  # one of CONDITION_TO_TANK_LEVEL's keys, from a fixed dropdown
+
+
+@app.get("/api/volunteer/zones")
+def volunteer_zones():
+    """Zones + the fixed condition options a volunteer can pick from."""
+    return {
+        "zones": ENTITLED_ZONE_NAMES,
+        "conditions": list(CONDITION_TO_TANK_LEVEL.keys()),
+    }
+
+
+@app.post("/api/volunteer/report")
+def volunteer_report(req: VolunteerReport):
+    """
+    Submit a zone condition report; return the entitlement engine's
+    decision (Phase 0), never a decision made by this layer or an LLM
+    (Rule 2). `condition` must be one of the fixed dropdown values --
+    translated to a tank_level fact via CONDITION_TO_TANK_LEVEL, a plain
+    lookup table, not NL parsing.
+    """
+    if req.condition not in CONDITION_TO_TANK_LEVEL:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unknown condition '{req.condition}', must be one of {list(CONDITION_TO_TANK_LEVEL)}",
+        )
+
+    tank_level = CONDITION_TO_TANK_LEVEL[req.condition]
+    # days_since_delivery isn't something a volunteer would know firsthand;
+    # assume "just reported, so treat as 0 days since last KNOWN delivery"
+    # -- entitlement then rests on the tank_level fact the volunteer gave,
+    # which is the honest, available signal here.
+    volunteer_facts = [
+        Clause(Term("tank_level", (req.zone_name, tank_level))),
+        Clause(Term("days_since_delivery", (req.zone_name, 0))),
+    ]
+    engine = EntitlementEngine(ENTITLEMENT_RULES + volunteer_facts)
+
+    entitled_results = engine.backward_chain(Term("entitled", (req.zone_name,)))
+    priority_results = engine.backward_chain(Term("high_priority", (req.zone_name,)))
+
+    if not entitled_results:
+        return {
+            "zone_name": req.zone_name,
+            "entitled": False,
+            "high_priority": False,
+            "reason": f"Reported tank level ({tank_level}%) and delivery history do not currently meet entitlement thresholds.",
+            "estimated_slot": None,
+        }
+
+    is_high_priority = bool(priority_results)
+    reason = priority_results[0][1].pretty() if priority_results else entitled_results[0][1].pretty()
+
+    estimated_slot = None
+    problem, assignment = _state["problem"], _state["assignment"]
+    if problem is not None and assignment is not None:
+        for t in problem.tankers:
+            for slot in range(problem.num_slots):
+                if assignment.get((t.id, slot)) == req.zone_name:
+                    estimated_slot = {"tanker_id": t.id, "slot": slot}
+                    break
+
+    return {
+        "zone_name": req.zone_name,
+        "entitled": True,
+        "high_priority": is_high_priority,
+        "reason": reason,
+        "estimated_slot": estimated_slot,
+        "estimated_slot_note": (
+            None
+            if estimated_slot
+            else "Not yet scheduled today -- pending dispatch."
+        ),
+    }
+
+
+@app.get("/api/driver/routes/{tanker_id}")
+def driver_routes(tanker_id: str):
+    """Stripped-down route list for one tanker: today's deliveries in slot order."""
+    problem, assignment = _state["problem"], _state["assignment"]
+    if problem is None or assignment is None:
+        raise HTTPException(status_code=400, detail="No schedule generated yet")
+
+    valid_ids = {t.id for t in problem.tankers}
+    if tanker_id not in valid_ids:
+        raise HTTPException(status_code=404, detail=f"Unknown tanker '{tanker_id}'")
+
+    deliveries = []
+    for slot in range(problem.num_slots):
+        zone_name = assignment.get((tanker_id, slot))
+        if zone_name is not None:
+            zone = problem.zone_by_name(zone_name)
+            deliveries.append(
+                {
+                    "slot": slot,
+                    "zone_name": zone_name,
+                    "need_liters": zone.need_liters,
+                    "is_high_priority": zone.is_high_priority,
+                    "completed": False,
+                }
+            )
+
+    return {"tanker_id": tanker_id, "deliveries": deliveries}
 
 
 class UrgentRequest(BaseModel):
