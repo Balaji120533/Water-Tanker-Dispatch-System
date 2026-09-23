@@ -1,0 +1,16 @@
+zone_no,roman,key,name,divisions,division_numbers
+1,I,thiruvotriyur,Thiruvottiyur,14,1-14
+2,II,manali,Manali,7,15-21
+3,III,madhavaram,Madhavaram,12,22-33
+4,IV,tondiarpet,Tondiarpet,15,34-48
+5,V,royapuram,Royapuram,15,49-63
+6,VI,thiruvika_nagar,Thiru-Vi-Ka Nagar,15,64-78
+7,VII,ambattur,Ambattur,15,79-93
+8,VIII,anna_nagar,Anna Nagar,15,94-108
+9,IX,teynampet,Teynampet,18,109-126
+10,X,kodambakkam,Kodambakkam,16,127-142
+11,XI,valasaravakkam,Valasaravakkam,13,143-155
+12,XII,alandur,Alandur,12,156-167
+13,XIII,adyar,Adyar,13,170-182
+14,XIV,perungudi,Perungudi,11,168-169;183-191
+15,XV,sozhanganallur,Shozhinganallur,9,192-200

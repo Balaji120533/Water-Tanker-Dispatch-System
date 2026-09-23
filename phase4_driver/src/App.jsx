@@ -107,14 +107,23 @@ export default function App() {
         {selected && (
           <div className="absolute bottom-2 left-2 z-[1000] bg-slate-800/95 rounded-lg px-3 py-2 text-xs">
             <p className="text-slate-300">
-              Refill at <strong className="text-white">{selected.station_name}</strong>, then drive to{" "}
-              <strong className="text-white">{selected.zone_name}</strong>
+              Refill at{" "}
+              <strong className="text-white">{selected.station_label ?? selected.station_name}</strong>
+              , then drive to{" "}
+              <strong className="text-white">{selected.zone_label ?? selected.zone_name}</strong>
             </p>
-            {selected.distance_m != null && (
-              <p className="text-slate-400 mt-0.5">
-                Shortest route: {(selected.distance_m / 1000).toFixed(1)} km
-              </p>
-            )}
+            {selected.distance_m != null &&
+              (selected.distance_m < 100 ? (
+                // The filling point sits inside the delivery area itself
+                // (e.g. Manali), so there is no route line to draw.
+                <p className="text-slate-400 mt-0.5">
+                  The filling point is in this area — no drive needed after refilling.
+                </p>
+              ) : (
+                <p className="text-slate-400 mt-0.5">
+                  Shortest route: {(selected.distance_m / 1000).toFixed(1)} km
+                </p>
+              ))}
           </div>
         )}
       </div>

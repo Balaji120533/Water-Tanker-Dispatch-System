@@ -108,7 +108,7 @@ function numberedStep(slide, x, y, w, n, heading, body) {
     fontFace: BODY_FONT, fontSize: 18, color: "BBD3E0",
     isTextBox: true, margin: 0,
   });
-  s.addText("Chennai  ·  real road network, synthetic operations data  ·  a validated simulation", {
+  s.addText("Chennai  ·  real roads and filling points, synthetic operations data  ·  a validated simulation", {
     x: 0.9, y: 4.6, w: 11.5, h: 0.4,
     fontFace: BODY_FONT, fontSize: 13, italic: true, color: "8FA8B8",
     isTextBox: true, margin: 0,
@@ -391,9 +391,9 @@ function numberedStep(slide, x, y, w, n, heading, body) {
   const s = lightSlide("Routing over the real Chennai network", "Unit II");
 
   card(s, 0.6, 1.4, 3.85, 1.5);
-  stat(s, 0.7, 1.55, 3.65, "73,126", "road nodes from OpenStreetMap");
+  stat(s, 0.7, 1.55, 3.65, "95,457", "road nodes from OpenStreetMap");
   card(s, 4.75, 1.4, 3.8, 1.5);
-  stat(s, 4.85, 1.55, 3.6, "184,436", "edges in the drive network");
+  stat(s, 4.85, 1.55, 3.6, "240,062", "edges in the drive network");
   card(s, 8.85, 1.4, 3.85, 1.5);
   stat(s, 8.95, 1.55, 3.65, "0.000%", "drawn route vs A* distance", GOOD);
 
@@ -413,7 +413,7 @@ function numberedStep(slide, x, y, w, n, heading, body) {
   s.addText(
     "OSMnx places nodes only at intersections; a road’s curve lives on the edge. Drawing node-to-node " +
     "cut corners and appeared to cross buildings. After expanding each edge to its true shape, the drawn " +
-    "polyline matches the A* road distance to 0.000% across all 40 routes — geometric proof it follows real roads.",
+    "polyline matches the A* road distance to 0.000% across all 330 routes — geometric proof it follows real roads.",
     { x: 0.95, y: 4.98, w: 11.4, h: 0.85, fontFace: BODY_FONT, fontSize: 13, color: INK, isTextBox: true, margin: 0 }
   );
 
@@ -546,7 +546,7 @@ function numberedStep(slide, x, y, w, n, heading, body) {
   });
 
   const facts = [
-    ["106", "automated tests passing"],
+    ["155", "automated tests passing"],
     ["8 / 8", "entitled zones served, 61 nodes"],
     ["3 → 0", "starved zones under strain"],
     ["0.000%", "route drawing error"],
@@ -571,7 +571,7 @@ function numberedStep(slide, x, y, w, n, heading, body) {
     fontFace: BODY_FONT, fontSize: 18, bold: true, color: WHITE, isTextBox: true, margin: 0,
   });
   s.addText([
-    { text: "Road network, zone locations and facility tags are real; tank levels, fleet and station coordinates are synthetic", options: { bullet: true, breakLine: true } },
+    { text: "Road network, zone boundaries and filling points are real; tank levels and fleet are synthetic", options: { bullet: true, breakLine: true } },
     { text: "Refill is modelled as an idle slot, not computed from station travel time", options: { bullet: true, breakLine: true } },
     { text: "Benchmarks cover small instances; scaling beyond ~20 zones is untested", options: { bullet: true } },
   ], {

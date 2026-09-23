@@ -79,19 +79,22 @@ Starts all four servers with colour-coded output. `Ctrl+C` stops them all.
 - API — http://localhost:8000
 
 On first run, Phase 2 downloads the Chennai road network from OpenStreetMap
-(~100s, ~57MB) and caches it. Subsequent starts are fast.
+(~2 min, ~85MB) and caches it. Subsequent starts are fast.
 
 ### A demo path that shows the whole system
 
 1. **Dispatcher** → *Generate schedule*. The CSP solver allocates tankers to
    entitled zones.
-2. **Volunteer** → type *"the tank in manali is completely empty"*. The LLM
-   extracts the facts, the logic engine decides, and you get a plain-language
-   answer. Expand *What I understood* to see both the extracted JSON and the
+2. **Volunteer** → type *"the tank in vadapalani is almost empty"*. The bot
+   places Vadapalani in Zone 10 Kodambakkam (ward 130) from the zone data,
+   reads the facts back, and waits for *Yes* before anything is decided. The
+   logic engine then rules, and you get a plain-language answer plus a live
+   status card. Expand *What I understood* to see the extracted facts and the
    raw proof tree — evidence the LLM didn't decide anything.
 3. **Driver** → pick the tanker serving a zone, see the shortest road route
-   drawn from its refill station, tap *Mark delivered*.
-4. **Dispatcher** → within ~3s that cell shows a green ✓.
+   drawn from its Metrowater filling point, tap *Mark delivered*.
+4. **Dispatcher** → within ~3s that cell shows a green ✓. The volunteer's chat
+   asks whether the water actually arrived.
 5. **Dispatcher** → *Mark tanker unavailable*. Min-conflicts repairs the
    schedule and highlights only the cells that changed.
 
@@ -101,7 +104,7 @@ On first run, Phase 2 downloads the Chennai road network from OpenStreetMap
 
 ```bash
 python scripts/demo.py          # runs every claim below end to end
-pytest                          # 106 tests across all phases
+pytest                          # 155 tests across all phases
 ```
 
 Individual pieces:
@@ -114,7 +117,22 @@ python phase2_routing/visualize.py                # route map → route_map.html
 python phase5_agentic/demo_partial_observability.py  # stale belief corrected
 python phase6_polish/fairness_report.py           # fairness evidence
 python phase6_polish/benchmark_report.py          # consolidated benchmarks
+python scripts/build_metrowater_data.py           # rebuild + cross-check zone data
 ```
+
+### Zone data
+
+The 15 zones and their 200 divisions (wards) come from the Chennai Metrowater
+zone map, transcribed in [data/metrowater/zones.csv](data/metrowater/zones.csv).
+[data/metrowater/localities.csv](data/metrowater/localities.csv) places 487
+named localities in their zone, using OpenStreetMap's official zone boundaries.
+The build script refuses to write anything unless every OSM ward sits inside
+the zone the Metrowater table assigns to it (196/196 agree; OSM lacks wards
+151, 156, 194, 198 and 200).
+
+A volunteer can name a zone, a locality, or a ward number. The lookup is a
+table in `phase5_agentic/zone_registry.py`, not the LLM. A locality name used in
+several zones ("Gandhi Nagar") gets a *which one?* question, never a guess.
 
 ### The fairness claim, measured
 
@@ -155,5 +173,9 @@ zone unservable by a 9,000L-only fleet — contradicting constraint (d), which
 exists so several deliveries can accumulate. Need is met by the *sum* of
 deliveries.
 
-**Known limitation.** Tank levels, needs, fleet, and station coordinates are
-synthetic. The road network, zone locations, and facility tags are real.
+**Known limitation.** Tank levels, needs and the fleet are synthetic. The road
+network, zone boundaries, localities, facility tags and filling points are real.
+Filling points were geocoded from their published addresses: 11 to the street,
+9 to the locality, 2 approximately (Thanikachalam Nagar, Pukraj Nagar; neither is
+in OpenStreetMap). Southern Head Works has no address yet and is left out
+rather than guessed.

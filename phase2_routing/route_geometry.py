@@ -4,7 +4,7 @@ source-station -> zone pair, using our custom A* from astar.py.
 
 travel_times.py caches distances/times but not the path itself. The driver
 view needs the real polyline to draw the route on a map, and loading the
-~57MB road graph inside a web request would be far too slow -- so this
+~85MB road graph inside a web request would be far too slow -- so this
 module computes every station->zone path once and caches the coordinate
 lists to JSON, which the API can then serve instantly.
 """

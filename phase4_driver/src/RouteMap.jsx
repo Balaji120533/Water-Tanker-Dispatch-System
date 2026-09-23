@@ -51,7 +51,7 @@ export default function RouteMap({ delivery, basemap }) {
           radius={8}
           pathOptions={{ color: "#2563eb", fillColor: "#2563eb", fillOpacity: 0.9 }}
         >
-          <Popup>Refill here first: {delivery.station_name}</Popup>
+          <Popup>Refill here first: {delivery.station_label ?? delivery.station_name}</Popup>
         </CircleMarker>
       )}
 
@@ -65,7 +65,7 @@ export default function RouteMap({ delivery, basemap }) {
             fillOpacity: 0.9,
           }}
         >
-          <Popup>Deliver to: {delivery.zone_name}</Popup>
+          <Popup>Deliver to: {delivery.zone_label ?? delivery.zone_name}</Popup>
         </CircleMarker>
       )}
     </MapContainer>

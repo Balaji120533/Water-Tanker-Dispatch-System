@@ -28,7 +28,7 @@ def main():
     graph = load_graph()
     distances, times = build_travel_time_matrix(graph)
 
-    station = "station_c"
+    station = "fp_kk_nagar"  # the filling point serving Kodambakkam
     stop_order_start = ["alandur", "teynampet", "kodambakkam"]
     cost_fn = partial(multi_stop_leg_cost, times, times, station)
     optimized_order, cost, _ = hill_climb(cost_fn, stop_order_start)
