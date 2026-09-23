@@ -1,20 +1,35 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import DispatchMap from "./components/DispatchMap";
 import ScheduleTable from "./components/ScheduleTable";
+import VolunteerRequests from "./components/VolunteerRequests";
 import { generateSchedule, disruptBreakdown, disruptUrgent, fetchStatus } from "./api";
 
 export default function App() {
   const [data, setData] = useState(null);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [changedCells, setChangedCells] = useState(new Set());
   const [lastDiff, setLastDiff] = useState(null);
+  const [liveNote, setLiveNote] = useState(null);
+  // Latest data for the poll to compare against, without re-arming it.
+  const dataRef = useRef(null);
+  useEffect(() => {
+    dataRef.current = data;
+    if (data?.requests) setRequests(data.requests);
+  }, [data]);
+
+  const flashCells = useCallback((cells) => {
+    setChangedCells(new Set(cells));
+    setTimeout(() => setChangedCells(new Set()), 2500);
+  }, []);
 
   const handleGenerate = useCallback(async () => {
     setLoading(true);
     setError(null);
     setChangedCells(new Set());
     setLastDiff(null);
+    setLiveNote(null);
     try {
       const result = await generateSchedule();
       setData(result);
@@ -32,45 +47,47 @@ export default function App() {
       const result = await fn();
       setData(result);
       setLastDiff(result.diff);
-      const cells = new Set(result.diff.map((d) => `${d.tanker_id}-${d.slot}`));
-      setChangedCells(cells);
-      setTimeout(() => setChangedCells(new Set()), 2500);
+      setLiveNote(null);
+      flashCells(result.diff.map((d) => `${d.tanker_id}-${d.slot}`));
     } catch (e) {
       setError(e.message);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [flashCells]);
 
-  // Poll for driver completions. Only the completed_slots flags are merged
-  // in -- the schedule itself is left alone so an in-flight repair diff
-  // highlight isn't wiped out by a poll landing mid-animation.
+  // Poll the backend every 3s. Picks up everything that can change without
+  // the dispatcher pressing a button: driver completions, and zones a
+  // volunteer's report inserted into the schedule (which are highlighted,
+  // like a repair diff, so they don't slip in unnoticed).
   useEffect(() => {
-    if (!data) return;
     const id = setInterval(async () => {
       try {
         const status = await fetchStatus();
-        if (!status?.schedule) return;
-        setData((prev) => {
-          if (!prev) return prev;
-          const completedBy = Object.fromEntries(
-            status.schedule.map((r) => [r.tanker_id, r.completed_slots])
-          );
-          return {
-            ...prev,
-            schedule: prev.schedule.map((row) => ({
-              ...row,
-              completed_slots: completedBy[row.tanker_id] ?? [],
-            })),
-          };
+        setRequests(status.requests ?? []);
+        const prev = dataRef.current;
+        if (!status?.schedule || !prev) return;
+
+        const changed = [];
+        status.schedule.forEach((row) => {
+          const old = prev.schedule.find((r) => r.tanker_id === row.tanker_id);
+          row.slots.forEach((zone, i) => {
+            if (old && old.slots[i] !== zone) changed.push(`${row.tanker_id}-${i}`);
+          });
         });
+
+        setData({ ...prev, schedule: status.schedule, zones: status.zones, requests: status.requests });
+        if (changed.length) {
+          flashCells(changed);
+          setLiveNote("Schedule updated from a volunteer report.");
+        }
       } catch {
         // Transient failure (backend restarting, etc.) -- keep showing the
         // last known state rather than blanking the dashboard.
       }
     }, 3000);
     return () => clearInterval(id);
-  }, [data !== null]);
+  }, [flashCells]);
 
   const unscheduledZones =
     data?.zones.filter(
@@ -117,19 +134,36 @@ export default function App() {
         </div>
       )}
 
+      {!data && requests.length > 0 && (
+        <div className="mb-4 bg-white rounded-lg shadow p-4">
+          <p className="text-sm text-amber-700 mb-3">
+            {requests.length} volunteer report{requests.length > 1 ? "s are" : " is"} waiting —
+            generate the schedule and they will be included.
+          </p>
+          <VolunteerRequests requests={requests} />
+        </div>
+      )}
+
       {data && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div className="bg-white rounded-lg shadow p-4 h-[500px]">
-            <DispatchMap schedule={data.schedule} zones={data.zones} />
+            <DispatchMap schedule={data.schedule} zones={data.zones} requests={requests} />
           </div>
 
           <div className="bg-white rounded-lg shadow p-4">
             <h2 className="text-lg font-medium mb-3">Today's schedule</h2>
+            {liveNote && <p className="text-xs text-amber-700 mb-2">{liveNote}</p>}
             <ScheduleTable
               schedule={data.schedule}
               numSlots={data.num_slots}
               changedCells={changedCells}
             />
+            {requests.length > 0 && (
+              <div className="mt-5">
+                <h3 className="font-medium text-sm mb-2">Volunteer reports</h3>
+                <VolunteerRequests requests={requests} />
+              </div>
+            )}
             {lastDiff && (
               <div className="mt-4 text-sm">
                 <h3 className="font-medium mb-1">Last repair diff</h3>

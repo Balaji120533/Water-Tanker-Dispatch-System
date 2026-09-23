@@ -4,6 +4,7 @@ __pycache__/
 .env
 /cache/
 phase2_routing/cache/*.graphml
+phase2_routing/cache/*.pkl
 phase2_routing/cache/*.json
 phase2_routing/route_map.html
 *.log

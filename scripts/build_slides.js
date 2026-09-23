@@ -546,7 +546,7 @@ function numberedStep(slide, x, y, w, n, heading, body) {
   });
 
   const facts = [
-    ["155", "automated tests passing"],
+    ["162", "automated tests passing"],
     ["8 / 8", "entitled zones served, 61 nodes"],
     ["3 → 0", "starved zones under strain"],
     ["0.000%", "route drawing error"],

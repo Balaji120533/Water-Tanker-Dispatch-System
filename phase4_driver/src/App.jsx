@@ -152,8 +152,11 @@ export default function App() {
                   <div className="min-w-0">
                     <p className="text-xs text-slate-400">Slot {d.slot}</p>
                     <p className={`text-base font-medium ${d.completed ? "line-through" : ""}`}>
-                      {d.zone_name}
+                      {d.zone_label ?? d.zone_name}
                     </p>
+                    {d.volunteer_request && (
+                      <p className="text-xs text-violet-300">Reported by a ward volunteer</p>
+                    )}
                     <p className="text-sm text-slate-400 mt-0.5">
                       {d.need_liters.toLocaleString()} L
                       {d.distance_m != null && <> · {(d.distance_m / 1000).toFixed(1)} km</>}
