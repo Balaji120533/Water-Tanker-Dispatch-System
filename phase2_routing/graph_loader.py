@@ -1,7 +1,6 @@
 """
 Loads the real Chennai drive-network road graph via OSMnx, bounded to a box
-covering our 8 zones + 5 source stations (not the whole city — Rule 5,
-start small). Caches to disk as GraphML so repeated runs/tests don't re-hit
+covering our 15 zones + 5 source stations (not the whole metro region). Caches to disk as GraphML so repeated runs/tests don't re-hit
 OpenStreetMap every time.
 """
 

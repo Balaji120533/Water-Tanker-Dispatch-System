@@ -1,0 +1,24 @@
+no,key,name,address,lat,lon,precision,located_by,places_served
+1,fp_manali,Manali Filling Point,"Kamarajar Street, Manali",13.18106,80.269419,locality,"Manali (Kamarajar Street not in OSM)",Thiruvottiyur
+2,fp_ernavoor,Ernavoor Filling Point,"Katthivakkam High Road, Chennai-57",13.1908163,80.3040777,locality,"Ernavoor (its stretch of Kathivakkam High Road not in OSM)",Kathivakkam
+3,fp_ramasamy_nagar,Ramasamy Nagar Filling Point,Ramasamy Nagar,13.0258,80.15857,locality,"Ramasamy Nagar Main Road, ward 153 (confirmed by project owner)","Ramasamy Nagar; Raja Shanmugapuram"
+4,fp_manali_new_town,Manali New Town Filling Point,"TPP High Road, Manali New Town, Chennai-103",13.2116618,80.2771598,locality,"Manali New Town (TPP High Road not in OSM)","Manali; Mathur; Vadaperumbakkam"
+5,fp_thanikachalam_nagar,Thanikachalam Nagar Filling Point,"Majestic Colony, West Thanikachalam Nagar, Chennai-110",13.134332,80.228224,approximate,"Ponniammanmedu, same 600110 postcode (not in OSM; placement approved by project owner)",Thanikachalam Nagar
+6,fp_pukraj_nagar,Pukraj Nagar Filling Point,"Pukrajaj Nagar, Madhavaram, Chennai-60",13.1421473,80.2323786,approximate,"Madhavaram centre (Pukraj Nagar not in OSM; placement approved by project owner)","Chinnasekkadu; Madhavaram; Puzhal"
+7,fp_patel_nagar,Patel Nagar Filling Point,"Ennore High Road, Tondiarpet (near IOC Bus Stand), Chennai-21",13.13907,80.28203,street,IOC MTC Terminus,"Tondiarpet; Korrukkupet"
+8,fp_vyasarpadi,Vyasarpadi Filling Point,"Moorthingar St., Chennai-39",13.1130472,80.258722,locality,"Vyasarpadi (Moorthingar Street not in OSM)","Kodungaiyur; Kannadasan Nagar"
+9,fp_anna_poonga,Anna Poonga Filling Point,"Maniyakarar Chattira Road, Chennai-21",13.1122762,80.2893812,locality,"Old Washermanpet (Maniyakarar Chattira Road not in OSM)","Royapuram; Stanley Nagar; Old Washermenpet"
+10,fp_mogappair_west,Mogappair West Filling Point,"School Road, Mogappair West, near Bus Stand, Chennai-50",13.08221,80.17041,street,Mogappair West Bus Terminus,"Anna Nagar West Extn.; Mogappair"
+11,fp_venkatapuram,Venkatapuram Filling Point,Venkatapuram,13.1175107,80.152976,locality,"Venkatapuram, Ambattur OT, ward 81","Oragadam; Pudur"
+12,fp_kilpauk,Kilpauk Filling Point,"New Avadi Road, Chennai-10",13.0870843,80.2345901,street,"New Avadi Road, Kilpauk","Anna Nagar; Villivakkam; Ayanavaram; Kilpauk; Thirumangalam; Shenoy Nagar; T.P.Chattiram"
+13,fp_southern_head_works,Southern Head Works Filling Point,,,,unknown,"No address given and not in OSM -- excluded until located","Choolaimedu; Mylapore; Alwarpet; T.Nagar; Nungambakkam; Triplicane"
+14,fp_kk_nagar,K.K.Nagar Filling Point,"R.K.Shanmugam Road, Chennai-78",13.03849,80.20173,street,"R.K. Shanmugam Salai, ward 131","Koyambedu; Nesapakkam; Saligramam; Vadapalai; K.K.Nagar; Ashok Nagar; Kodambakkam; West Mambalam; T.Nagar"
+15,fp_valasaravakkam,Valasaravakkam Filling Point,"Rajaji Street, near TNEB office, Valasaravakkam, Chennai-87",13.0481004,80.1829581,street,"Rajaji Street, ward 149","Valasaravakkam; Porur; Ramapuram; Nolambur; Nerkundram; Karapakkam"
+16,fp_alapakkam,Alampakkam Filling Point,"Gangaiamman Koil St., Alapakkam, Madhuravoil, Chennai-95",13.049901,80.1654347,locality,"Alapakkam (Gangaiamman Koil Street not matched)",Maduravoyil
+17,fp_nandambakkam,Nandambakkam Filling Point,"Kodandapani Ramar Koil St., Chennai-89",13.01732,80.19263,street,"Ramar Koil Street, Nandambakkam, ward 158","Alandur; Mugalivakkam; Manapakkam; Nandambakkam; Meenambakkam"
+18,fp_pallipattu,Pallipattu Filling Point,"Sriram Nagar, Pallipattu, Chennai-20",13.0027604,80.2437561,street,"Pallipattu Main Road, Sriram Nagar, ward 172","Thiruvanmiyur; Adyar; Taramani"
+19,fp_velachery,Velacheri Filling Point,"100' By Pass Road, Velachery, Chennai-42",12.9765177,80.2197517,street,"100 Feet Road, Velachery, ward 178","Velachery; Toraipakkam; Secretariat Colony; Adambakkam"
+20,fp_ekkattuthangal,Ekkattuthangal Filling Point,Ekkattuthangal,13.0242453,80.2065506,locality,Ekkattuthangal,"Ekkattuthangal; Saidapet; Kotturpuram"
+21,fp_mrc_nagar,MRC Nagar Filling Point,"75, Santhome High Road, Chennai-28",13.0209224,80.2698276,street,"Santhome High Road, ward 173","Greenways Road; S.K.Puram; MRC Nagar"
+22,fp_annai_therasa_nagar,Annai Therasa Nagar Filling Point,"Annai Therasa Nagar 1st Street, Puzhuthivakkam, Chennai-91",12.9691428,80.2062626,locality,"Puzhuthivakkam (Annai Therasa Nagar not in OSM)","Perungudi; Ullagaram; Puzhuthivakkam; Kottivakkam; Palavakkam; Madipakkam; Pallikaranai; Jalladampettai"
+23,fp_karapakkam,Karapakkam Filling Point,"Gajarajan Main Road, Karapakkam",12.9124767,80.230128,street,"Gajarajan Main Road, ward 197","Sholinganallur; Neelangarai; Okkium Thoraipakkam; Injambakkam; Karapakkam; Uthandi; Semencherry"

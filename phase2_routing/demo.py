@@ -15,7 +15,7 @@ def main():
     print("Loading travel time matrix (cached after first run)...")
     distances, times = build_travel_time_matrix()
 
-    station = "station_c"
+    station = "fp_kk_nagar"  # the filling point serving Kodambakkam
     print(f"\n=== Single-delivery model (each visit round-trips to {station}) ===")
     zones = ["teynampet", "kodambakkam", "alandur"]
     cost_1 = route_cost(times, station, zones)

@@ -23,7 +23,7 @@ def test_haversine_known_distance_order_of_magnitude():
 
 
 def test_astar_finds_a_path_between_station_and_zone():
-    lat1, lon1 = SOURCE_STATIONS["station_c"]
+    lat1, lon1 = SOURCE_STATIONS["fp_kk_nagar"]
     lat2, lon2 = ZONE_COORDS["teynampet"]
     start = nearest_node(GRAPH, lat1, lon1)
     goal = nearest_node(GRAPH, lat2, lon2)
@@ -41,7 +41,7 @@ def test_astar_distance_matches_networkx_dijkstra():
     # A* with an admissible heuristic must find the SAME optimal cost as
     # plain Dijkstra/shortest_path (which is what NetworkX's built-in uses)
     # -- this is the correctness check for the custom implementation.
-    lat1, lon1 = SOURCE_STATIONS["station_a"]
+    lat1, lon1 = SOURCE_STATIONS["fp_manali_new_town"]
     lat2, lon2 = ZONE_COORDS["manali"]
     start = nearest_node(GRAPH, lat1, lon1)
     goal = nearest_node(GRAPH, lat2, lon2)

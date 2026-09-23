@@ -1,6 +1,12 @@
 import { useState } from "react";
 import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from "react-leaflet";
-import { ZONE_COORDS, SOURCE_STATIONS, MAP_CENTER } from "../zonesData";
+import {
+  ZONE_COORDS,
+  ZONE_LABELS,
+  SOURCE_STATIONS,
+  FILLING_POINT_NAMES,
+  MAP_CENTER,
+} from "../zonesData";
 
 const BASEMAPS = {
   street: {
@@ -27,6 +33,7 @@ const BASEMAPS = {
 export default function DispatchMap({ schedule, zones }) {
   const [basemap, setBasemap] = useState("street");
   const highPriorityZones = new Set(zones.filter((z) => z.is_high_priority).map((z) => z.name));
+  const entitledZones = new Set(zones.map((z) => z.name));
   const scheduledZones = new Set(
     schedule.flatMap((row) => row.slots).filter((v) => v !== null)
   );
@@ -58,29 +65,32 @@ export default function DispatchMap({ schedule, zones }) {
           <CircleMarker
             key={name}
             center={pos}
-            radius={7}
+            radius={5}
             pathOptions={{ color: "#2563eb", fillColor: "#2563eb", fillOpacity: 0.8 }}
           >
-            <Popup>Source station: {name}</Popup>
+            <Popup>{FILLING_POINT_NAMES[name] || name}</Popup>
           </CircleMarker>
         ))}
 
         {Object.entries(ZONE_COORDS).map(([name, pos]) => {
           const scheduled = scheduledZones.has(name);
           const highPriority = highPriorityZones.has(name);
+          const entitled = entitledZones.has(name);
           const color = !scheduled ? "#9ca3af" : highPriority ? "#dc2626" : "#16a34a";
           return (
             <CircleMarker
               key={name}
               center={pos}
-              radius={8}
-              pathOptions={{ color, fillColor: color, fillOpacity: 0.85 }}
+              radius={entitled ? 8 : 6}
+              pathOptions={{ color, fillColor: color, fillOpacity: entitled ? 0.85 : 0.4 }}
             >
               <Popup>
                 <div className="text-sm">
-                  <strong>{name}</strong>
-                  <div>{highPriority ? "High priority" : "Entitled"}</div>
-                  <div>{scheduled ? "Scheduled today" : "Not scheduled"}</div>
+                  <strong>{ZONE_LABELS[name] || name}</strong>
+                  <div>
+                    {!entitled ? "Not entitled today" : highPriority ? "High priority" : "Entitled"}
+                  </div>
+                  {entitled && <div>{scheduled ? "Scheduled today" : "Not scheduled"}</div>}
                 </div>
               </Popup>
             </CircleMarker>

@@ -1,0 +1,488 @@
+name,zone_no,ward,place_type,lat,lon
+All India Radio Housing Board,1,3,neighbourhood,13.187209,80.312303
+Anna Nagar,1,2,locality,13.207371,80.315029
+Bharathiyar Nagar,1,5,neighbourhood,13.185809,80.315551
+Ennore,1,1,suburb,13.225826,80.324355
+Ernavur,1,3,suburb,13.189355,80.311138
+Ernavur Gate,1,5,locality,13.184926,80.312643
+Kaladipet,1,12,neighbourhood,13.151597,80.298777
+Kargil Nagar,1,6,suburb,13.173019,80.292241
+Kathivakkam,1,2,town,13.214181,80.31875
+Nehru Nagar,1,2,neighbourhood,13.215933,80.318729
+Sivakami Nagar,1,3,neighbourhood,13.197653,80.317299
+Thazhankuppam,1,1,suburb,13.227136,80.328155
+Tiruvottiyur,1,11,town,13.156567,80.300651
+Ariyalur,2,17,hamlet,13.191872,80.250742
+Chettimedu,2,17,hamlet,13.18339,80.22881
+Chinna Echankuzhi,2,15,hamlet,13.223057,80.272146
+Dwaraka Nagar,2,16,suburb,13.19413,80.274275
+Dwaraka Nagar Phase I,2,16,locality,13.194938,80.272449
+Dwaraka Nagar Phase II,2,16,locality,13.194604,80.278758
+Edayanchavadi,2,15,suburb,13.21698,80.285017
+Kadapakkam,2,16,suburb,13.198491,80.265252
+Kanniyampettai,2,16,hamlet,13.192708,80.2557
+Kosappur,2,17,suburb,13.18183,80.235098
+Manali,2,18,town,13.18106,80.269419
+Mathur,2,19,suburb,13.167864,80.243692
+Mathur MMDA Colony,2,19,locality,13.170512,80.248069
+Nappalayam,2,15,hamlet,13.220033,80.272378
+Saidayankuppam,2,16,suburb,13.185479,80.292431
+Theyampakkam,2,17,hamlet,13.195058,80.23226
+Vadaperumbakkam,2,17,suburb,13.175401,80.218332
+Assisi Nagar,3,27,locality,13.16461,80.233
+Kathirvedu,3,25,suburb,13.149309,80.200991
+Kavankarai,3,22,suburb,13.168667,80.197014
+Lakshmipuram,3,24,suburb,13.134833,80.198947
+Madanankuppam,3,24,locality,13.136075,80.190008
+Madhavaram,3,31,town,13.142147,80.232379
+Madhavaram Milk Colony,3,28,suburb,13.155408,80.242525
+Manjampakkam,3,27,suburb,13.159591,80.224704
+Ponniammanmedu,3,33,neighbourhood,13.134332,80.228224
+Puzhal,3,23,suburb,13.159114,80.203115
+Shanmugapuram,3,24,neighbourhood,13.141259,80.180872
+Shastri Nagar,3,26,neighbourhood,13.134565,80.219687
+Surapet,3,24,suburb,13.144194,80.187217
+Basin Bridge,4,46,neighbourhood,13.108047,80.269908
+Cherian Nagar,4,39,neighbourhood,13.138415,80.297156
+Ezhil Nagar,4,41,locality,13.128721,80.272484
+Jeeva Nagar,4,39,locality,13.139297,80.291589
+Kannadasan Nagar,4,37,locality,13.129767,80.261954
+Kodungaiyur,4,36,suburb,13.130819,80.256182
+Korukkupet,4,42,suburb,13.121534,80.283791
+MKB Nagar,4,37,locality,13.122533,80.263137
+Moolakadai,4,35,locality,13.129168,80.241699
+Muthamizh Nagar,4,35,locality,13.133472,80.249571
+New Washermanpet,4,40,suburb,13.133866,80.290359
+Parvathi Nagar,4,34,locality,13.145756,80.249642
+Rajarathinam Colony,4,37,locality,13.128559,80.267649
+Sharma Nagar,4,36,locality,13.122985,80.253303
+Tollgate,4,39,neighbourhood,13.142953,80.295574
+Tondiarpet,4,40,suburb,13.127767,80.289585
+Vyasarpadi,4,45,suburb,13.113047,80.258722
+Washermanpet,4,48,suburb,13.11363,80.281481
+Chintadripet,5,62,suburb,13.076126,80.270781
+Doveton,5,58,neighbourhood,13.087322,80.258079
+Egmore,5,61,suburb,13.072832,80.257691
+Esplanade,5,57,locality,13.089135,80.285188
+Evening Bazaar,5,59,neighbourhood,13.084932,80.27872
+Flower Bazaar,5,57,neighbourhood,13.089344,80.28197
+George Town,5,57,suburb,13.092092,80.282243
+Government Estate,5,59,neighbourhood,13.067361,80.276799
+Grace Garden,5,49,neighbourhood,13.11809,80.291473
+Island Grounds,5,60,suburb,13.0742,80.279362
+Kondithope,5,54,locality,13.10004,80.279084
+Mahaveer Colony,5,58,neighbourhood,13.082917,80.261558
+Mannady,5,60,locality,13.095944,80.287101
+Moolakothalam,5,53,neighbourhood,13.106734,80.276481
+Old Washermanpet,5,49,neighbourhood,13.112276,80.289381
+Park Town,5,58,suburb,13.086349,80.272732
+Periamet,5,58,neighbourhood,13.084414,80.269277
+Pudupet,5,63,neighbourhood,13.071202,80.26696
+Royapuram,5,50,suburb,13.114619,80.294028
+Seven Wells,5,55,locality,13.100569,80.282115
+Sowcarpet,5,59,neighbourhood,13.088497,80.278309
+Stanley Nagar,5,53,neighbourhood,13.109268,80.272188
+Vallalar Nagar,5,54,suburb,13.101926,80.278777
+Vepery,5,58,suburb,13.084295,80.262274
+Agaram,6,66,neighbourhood,13.115848,80.229582
+Choolai,6,78,suburb,13.090628,80.262142
+Ekangipuram,6,71,locality,13.104352,80.244348
+Gandhinagar,6,73,neighbourhood,13.099903,80.266175
+GKM Colony,6,67,locality,13.111915,80.220702
+Jamalaya Nagar,6,70,locality,13.106081,80.248707
+Jayaram Nagar,6,64,neighbourhood,13.120464,80.210753
+Kannigapuram,6,72,neighbourhood,13.107125,80.263442
+Kolathur,6,64,suburb,13.123655,80.212885
+Kosapet,6,78,locality,13.093935,80.254791
+Kumaran Nagar,6,65,neighbourhood,13.128209,80.202394
+Mahatma Gandhi Nagar,6,64,neighbourhood,13.126863,80.211211
+Mettupalayam,6,70,locality,13.107554,80.254024
+Narasimha Nagar,6,72,neighbourhood,13.104776,80.266189
+Otteri,6,74,suburb,13.096958,80.248722
+Perambur,6,70,suburb,13.112124,80.245022
+Periyar Nagar,6,66,neighbourhood,13.115742,80.224927
+Poompuhar Nagar,6,75,locality,13.093725,80.252797
+Pulianthope,6,73,suburb,13.100843,80.262625
+Purasawalkam,6,78,suburb,13.089327,80.255033
+Rajaji Nagar,6,65,locality,13.111516,80.211606
+Rajan Nagar,6,64,neighbourhood,13.123894,80.208041
+Secretariat Colony,6,74,neighbourhood,13.08945,80.24282
+Sembiyam,6,68,locality,13.122013,80.241216
+Senthil Nagar,6,65,neighbourhood,13.12164,80.202656
+Sundarapuram,6,77,neighbourhood,13.096959,80.266632
+Thiru Vi Ka Nagar,6,66,suburb,13.120899,80.22951
+Venkatesapuram,6,72,neighbourhood,13.10851,80.264024
+VOC Nagar,6,72,neighbourhood,13.105469,80.262158
+Ambattur,7,85,town,13.105565,80.163959
+Ambattur Industrial Estate,7,86,suburb,13.095244,80.167166
+Ambattur OT,7,81,suburb,13.119706,80.150427
+Anna Nagar West,7,89,suburb,13.094079,80.192298
+Athipet,7,86,suburb,13.092043,80.154451
+Banu Nagar,7,80,neighbourhood,13.136242,80.160534
+Banu Nagar West,7,79,neighbourhood,13.133725,80.155643
+Barathi Nagar,7,80,neighbourhood,13.12867,80.157423
+Collector Nagar,7,89,locality,13.088494,80.190971
+Devanampattu,7,82,neighbourhood,13.124954,80.16361
+Gangai Nagar,7,82,neighbourhood,13.128581,80.172054
+Gangaiamman Nagar,7,91,locality,13.074301,80.179458
+JJ Nagar,7,91,suburb,13.082347,80.170216
+Kallikuppam,7,82,suburb,13.13314,80.170179
+Karukku,7,82,suburb,13.118881,80.167754
+Korattur,7,83,suburb,13.111548,80.184627
+KSR Nagar,7,86,neighbourhood,13.099642,80.15656
+Madhangakuppam,7,82,neighbourhood,13.131435,80.181667
+Mangalapuram,7,85,neighbourhood,13.10285,80.168061
+Mannurpet,7,87,suburb,13.095145,80.183421
+Menambedu,7,82,neighbourhood,13.121811,80.163306
+Mogappair East,7,93,suburb,13.083514,80.184078
+Oragadam,7,79,neighbourhood,13.130757,80.153283
+Padi,7,84,suburb,13.103585,80.192042
+Pari Nagar,7,82,neighbourhood,13.117404,80.16306
+Prithvipakkam,7,81,neighbourhood,13.118458,80.159597
+Pudur,7,80,suburb,13.129821,80.159213
+Puthagaram,7,83,suburb,13.118209,80.192311
+Rail Nagar,7,93,locality,13.076594,80.190331
+Ram Nagar,7,79,neighbourhood,13.125315,80.147841
+SRB Nagar,7,83,locality,13.118638,80.201512
+Teachers Colony,7,85,neighbourhood,13.110256,80.150904
+Thirumalai Priya Nagar,7,80,neighbourhood,13.128997,80.162154
+Thiruvengada Nagar,7,81,neighbourhood,13.119338,80.145393
+TNHB Colony,7,84,neighbourhood,13.106303,80.183533
+Varadharajapuram,7,85,neighbourhood,13.112731,80.153967
+Venkatapuram,7,81,neighbourhood,13.117511,80.152976
+Venkateswara Nagar,7,79,neighbourhood,13.132662,80.149069
+Vijayalakshmipuram,7,80,neighbourhood,13.123822,80.15496
+Vinayagapuram,7,79,neighbourhood,13.126317,80.150841
+AA Block,8,100,neighbourhood,13.083498,80.216474
+AB Block,8,100,neighbourhood,13.083593,80.214115
+AC Block,8,100,neighbourhood,13.083715,80.211354
+Aminjikarai,8,106,suburb,13.07214,80.220545
+Anna Nagar,8,99,suburb,13.088249,80.20734
+Anna Nagar East,8,102,neighbourhood,13.085212,80.225889
+Arumbakkam,8,105,suburb,13.074371,80.208131
+Aspiran Garden,8,98,neighbourhood,13.08627,80.237039
+Ayanavaram,8,98,suburb,13.094616,80.23541
+Baba Nagar,8,94,locality,13.117217,80.203117
+Bharathipuram,8,102,neighbourhood,13.077665,80.222254
+Chetpet,8,107,suburb,13.071745,80.243797
+E Block,8,101,neighbourhood,13.086926,80.219444
+F Block,8,101,neighbourhood,13.08683,80.221636
+ICF Colony,8,96,neighbourhood,13.099531,80.220238
+Kellys,8,103,neighbourhood,13.082819,80.243328
+Kilpauk,8,103,suburb,13.083215,80.237986
+Kilpauk Garden,8,102,neighbourhood,13.084541,80.231106
+Malar Colony,8,95,neighbourhood,13.097796,80.198932
+Mehta Nagar,8,106,neighbourhood,13.070378,80.226807
+MMDA Colony,8,105,locality,13.069389,80.21427
+Nagerkoyil Sudalaimuthu Krishnan Nagar,8,100,neighbourhood,13.077751,80.216713
+NGO Colony,8,108,neighbourhood,13.064553,80.219964
+North Jagannatha Nagar,8,94,locality,13.11241,80.202242
+Officers Colony,8,96,locality,13.100681,80.229708
+Q Block,8,101,locality,13.091406,80.216724
+R Block,8,100,locality,13.091454,80.214196
+Reserve Bank Staff Quarters,8,103,quarter,13.07855,80.239163
+S Block,8,100,locality,13.091534,80.211908
+Shenoy Nagar,8,102,suburb,13.078667,80.227255
+SIDCO Nagar,8,94,locality,13.10756,80.200961
+South Jagannatha Nagar,8,94,locality,13.109819,80.202113
+Srinivasa Nagar,8,94,neighbourhood,13.118161,80.206248
+T Block,8,101,neighbourhood,13.089406,80.216516
+Thirumangalam,8,99,suburb,13.084269,80.200646
+Thiruvalluvar Nagar,8,98,locality,13.093473,80.238683
+U Block,8,100,locality,13.089518,80.21418
+V Block,8,100,locality,13.089614,80.211924
+Villivakkam,8,95,suburb,13.104048,80.209044
+W Block,8,101,neighbourhood,13.08667,80.2165
+X Block,8,100,locality,13.087511,80.214028
+Y Block,8,100,locality,13.086877,80.211665
+Abhiramapuram,9,123,neighbourhood,13.031024,80.2583
+Alwarpet,9,123,suburb,13.03386,80.254549
+Chepauk,9,114,suburb,13.064513,80.283118
+CIT Colony,9,119,neighbourhood,13.04131,80.260472
+East Abhiramapuram,9,123,neighbourhood,13.034268,80.261791
+Ellaiamman Colony,9,118,neighbourhood,13.046986,80.251936
+Foreshore Estate,9,126,suburb,13.024921,80.277687
+Ganapathy Colony,9,118,neighbourhood,13.050851,80.259732
+Ganesapuram,9,122,neighbourhood,13.030853,80.245009
+Ganga Enclave,9,112,locality,13.054207,80.221703
+Gemini,9,113,neighbourhood,13.052104,80.250007
+Gopalapuram,9,118,suburb,13.049732,80.258203
+Jeth Nagar,9,126,neighbourhood,13.027831,80.262238
+Lloyds Colony,9,120,neighbourhood,13.049074,80.271599
+Lock Nagar,9,114,neighbourhood,13.066503,80.281598
+Lotus Colony,9,122,neighbourhood,13.029642,80.240377
+Mahalingapuram,9,110,neighbourhood,13.056783,80.236404
+Mandaveli,9,126,suburb,13.025844,80.262788
+Mattankuppam,9,116,neighbourhood,13.05672,80.279743
+Mylapore,9,124,suburb,13.031647,80.270017
+Nandanam,9,122,suburb,13.028629,80.240256
+Nandanam Extension,9,122,neighbourhood,13.028186,80.243314
+Nungambakkam,9,110,suburb,13.062063,80.240487
+Poes Garden,9,118,neighbourhood,13.043707,80.253316
+Pushpa Nagar,9,110,neighbourhood,13.059506,80.238376
+Raja Annamalai Puram,9,123,suburb,13.024478,80.253937
+Royapettah,9,115,suburb,13.055472,80.263971
+Santhome,9,125,neighbourhood,13.029837,80.275738
+Seethammal Colony,9,123,neighbourhood,13.035959,80.253442
+Seethammal Colony Extension,9,122,neighbourhood,13.034499,80.247447
+Sriram Nagar,9,122,neighbourhood,13.031397,80.250059
+Teynampet,9,118,suburb,13.044324,80.249846
+Thousand Lights,9,111,suburb,13.058783,80.255711
+Triplicane,9,114,suburb,13.060429,80.27507
+Trustpuram,9,112,neighbourhood,13.055565,80.223336
+Vaniya Teynampet,9,123,neighbourhood,13.038989,80.248111
+Venus Colony,9,118,neighbourhood,13.040107,80.25492
+Zam Bazaar,9,114,neighbourhood,13.059296,80.271022
+Alwarthirunagar,10,128,suburb,13.044322,80.187982
+Ashok Nagar,10,132,suburb,13.035927,80.21457
+AVM Avenue,10,128,neighbourhood,13.050354,80.187623
+Avvai Thiru Nagar,10,127,locality,13.063872,80.191865
+Aziz Nagar,10,134,neighbourhood,13.048697,80.228114
+Bharathidasan Colony,10,138,locality,13.033573,80.204406
+Chinmaya Nagar,10,127,locality,13.062214,80.199184
+CIT Nagar,10,141,neighbourhood,13.029384,80.234283
+Devaraj Nagar,10,129,locality,13.05721,80.203358
+Dhanalkshmi Colony,10,129,locality,13.054927,80.205467
+Gandhi Nagar,10,129,locality,13.058274,80.207887
+Indira Colony,10,132,locality,13.033131,80.210927
+Jafferkhanpet,10,138,neighbourhood,13.02995,80.20542
+K.K.Nagar,10,131,suburb,13.040797,80.20298
+Kamarajar Colony,10,134,neighbourhood,13.049974,80.220129
+Kannammapet,10,141,neighbourhood,13.032326,80.228078
+Kaveri Rangan Colony,10,129,neighbourhood,13.053764,80.201233
+Kodambakkam,10,134,suburb,13.049207,80.224283
+Koyambedu,10,127,suburb,13.071519,80.199809
+Kumaran Colony,10,129,locality,13.052779,80.207046
+Maruthur Gopalan Ramachandran Nagar,10,138,locality,13.03412,80.19904
+Natesan Nagar,10,127,neighbourhood,13.057898,80.192704
+Ottagapalayam,10,132,locality,13.043309,80.213016
+Paari Nagar,10,138,locality,13.027895,80.209076
+Postal Colony,10,135,neighbourhood,13.036329,80.219548
+Saidapet,10,142,suburb,13.020817,80.223954
+Saligramam,10,129,suburb,13.056989,80.20373
+Saptagiri Colony,10,138,locality,13.030053,80.202577
+Sathya Garden,10,131,neighbourhood,13.045818,80.19819
+SBI Colony,10,129,neighbourhood,13.053773,80.198937
+Sector 1 Sowbaghya Colony,10,131,locality,13.037499,80.202658
+Sector 10 Shanthiniketan Colony,10,137,locality,13.04285,80.194905
+Sector 11,10,137,locality,13.040635,80.194506
+Sector 12,10,137,locality,13.038575,80.194279
+Sector 13,10,131,locality,13.041004,80.20756
+Sector 14,10,131,locality,13.044083,80.206491
+Sector 2,10,131,locality,13.039379,80.202989
+Sector 3,10,131,locality,13.041527,80.203687
+Sector 4 Rajamannar Colony,10,137,locality,13.041976,80.200522
+Sector 5 Goutham Colony,10,131,locality,13.039717,80.200887
+Sector 6 Sangeetha Colony,10,137,locality,13.037779,80.199858
+Sector 7 Kamadhenu Colony,10,137,locality,13.038144,80.197329
+Sector 8,10,137,locality,13.040186,80.197688
+Sector 9 Santosh Colony,10,137,locality,13.042816,80.195834
+Tharachand Nagar,10,128,locality,13.054056,80.195338
+Thiyagaraya Nagar,10,136,suburb,13.037829,80.231836
+United India Colony,10,134,neighbourhood,13.051122,80.224758
+Vadapalani,10,130,suburb,13.050298,80.21183
+Vasudevan Nagar,10,138,locality,13.028288,80.206826
+Velayudam Colony,10,129,neighbourhood,13.049755,80.202848
+Virugambakkam,10,128,suburb,13.052264,80.191693
+West Mambalam,10,133,suburb,13.04359,80.220809
+West Saidapet,10,140,neighbourhood,13.025258,80.220424
+Alapakkam,11,146,suburb,13.049901,80.165435
+Alwarthirunagar,11,149,locality,13.047486,80.183669
+Anis Nagar,11,155,neighbourhood,13.037274,80.188148
+Annai Sathya Nagar Nesapakkam,11,155,neighbourhood,13.035716,80.188453
+Balakrishna Nagar,11,145,neighbourhood,13.059415,80.184745
+Chowdhary Nagar,11,152,neighbourhood,13.038686,80.180934
+Gandhi Nagar,11,152,neighbourhood,13.041268,80.187183
+GingerBread,11,143,locality,13.080216,80.173696
+Indra Nagar,11,155,neighbourhood,13.03708,80.188721
+Janaki Nagar,11,152,neighbourhood,13.04017,80.182073
+Karambakkam,11,147,suburb,13.041008,80.164404
+Kothari Nagar,11,155,neighbourhood,13.035212,80.185102
+Maduravoyal,11,147,town,13.060603,80.166088
+Majestic Colony,11,152,neighbourhood,13.038548,80.179985
+Mettukuppam,11,144,neighbourhood,13.058535,80.173446
+Moogambigai Nagar,11,155,neighbourhood,13.037242,80.185137
+Nerkundram,11,145,suburb,13.068839,80.183899
+Nesammal Nagar,11,145,neighbourhood,13.061732,80.181672
+Nesapakkam,11,155,suburb,13.033619,80.187309
+Nolambur,11,143,suburb,13.074718,80.168221
+Om Sakthi Nagar,11,152,neighbourhood,13.03802,80.186739
+Porur,11,153,suburb,13.032458,80.158286
+Radha Avenue,11,149,neighbourhood,13.051084,80.177301
+Ramapuram,11,154,suburb,13.029861,80.178033
+S and P Garden,11,143,neighbourhood,13.066935,80.163243
+Senthamizh Nagar,11,155,neighbourhood,13.034764,80.187437
+Sri Devi Nagar,11,147,neighbourhood,13.045339,80.168503
+Sri Laxmi Nagar,11,155,neighbourhood,13.036349,80.18065
+Sri Ragavendra Nagar,11,155,neighbourhood,13.03673,80.186351
+Suresh Nagar,11,152,neighbourhood,13.037627,80.182819
+Thirumalai Nagar,11,155,neighbourhood,13.034759,80.182392
+Valasaravakkam,11,149,suburb,13.043023,80.175212
+Veerappa Nagar,11,152,neighbourhood,13.042342,80.18525
+Bakhtavachalam Nagar,12,166,neighbourhood,12.97786,80.179105
+IAS Officers Colony,12,157,locality,13.013385,80.180194
+"Krishna Nagar, Periyar Road",12,157,neighbourhood,13.015299,80.171766
+Madanandapuram,12,,locality,13.023516,80.153423
+Manapakkam,12,157,suburb,13.014753,80.174493
+Meenambakkam,12,159,suburb,12.986601,80.172636
+Moovarasampettai,12,167,suburb,12.969366,80.183359
+Mugalivakkam,12,,suburb,13.02058,80.168516
+Mukti Enclave,12,157,locality,13.017131,80.177263
+Nandambakkam,12,158,suburb,13.016648,80.191188
+Nanganallur,12,167,suburb,12.980124,80.184902
+Nanganallur Co-op Society Colony,12,164,neighbourhood,12.98796,80.190591
+NCBS Colony,12,164,neighbourhood,12.985463,80.189696
+Pazhavanthangal,12,162,suburb,12.988352,80.189132
+Ram Nagar,12,165,neighbourhood,12.984889,80.194335
+Thillai Ganga Nagar,12,162,neighbourhood,12.989843,80.193662
+Voltas Colony,12,167,neighbourhood,12.974499,80.186368
+கண்ணன் நகர்,12,167,neighbourhood,12.969907,80.189316
+Achutan Nagar,13,170,locality,13.020278,80.201026
+Adambakkam,13,177,suburb,12.982221,80.209121
+Adyar,13,176,suburb,13.00645,80.257779
+AGS Officers Colony,13,177,neighbourhood,12.97897,80.209705
+Ambal Nagar,13,170,locality,13.018353,80.20445
+Arunachalapuram,13,176,neighbourhood,13.008735,80.260852
+Baby Nagar,13,179,neighbourhood,12.980365,80.229195
+Bakthavatchalam Nagar,13,175,neighbourhood,13.003406,80.253094
+Balaji Nagar,13,170,locality,13.022916,80.204868
+Besant Nagar,13,176,suburb,12.999691,80.268226
+Bhuvaneswary Nagar,13,179,neighbourhood,12.96991,80.221953
+"Central Government Officers Quarters, General Pool Accomodation",13,176,neighbourhood,13.002196,80.265283
+Damodarapuram,13,176,neighbourhood,13.001807,80.262981
+Defence Colony,13,170,locality,13.022007,80.199503
+Devendra Nagar,13,182,neighbourhood,12.978757,80.25546
+Dhandeeswaram,13,179,neighbourhood,12.982639,80.224188
+Dr Ambedkar Nagar,13,177,neighbourhood,12.990055,80.207484
+Ekkattuthangal,13,170,suburb,13.024245,80.206551
+Gandhinagar,13,175,neighbourhood,13.008993,80.253863
+Ganesh Nagar,13,182,locality,12.979411,80.258162
+Gangai Nagar,13,177,neighbourhood,12.983525,80.215924
+GOCHS Colony,13,176,neighbourhood,12.997872,80.269171
+Guindy,13,174,suburb,13.00871,80.220365
+Guindy Industrial Estate,13,170,suburb,13.01407,80.209121
+Indira Nagar,13,175,locality,12.996315,80.25242
+JagannathaPuram,13,178,neighbourhood,12.984682,80.221892
+Jeevarathinam Nagar,13,176,neighbourhood,13.002057,80.260695
+Jothiammal Nagar,13,171,neighbourhood,13.019511,80.228897
+Kalaimagal Nagar,13,170,locality,13.02529,80.205427
+Kalakshetra Colony,13,181,locality,12.993635,80.266422
+Kamraj nagar,13,182,locality,12.98393,80.257283
+Kannappa Nagar,13,182,neighbourhood,12.975555,80.256908
+Karpagam Avenue,13,173,neighbourhood,13.021979,80.26783
+Karpagam Garden,13,176,neighbourhood,13.007178,80.261545
+Kasturibai Nagar,13,175,neighbourhood,13.004044,80.250938
+Kesavaperumalpuram,13,173,neighbourhood,13.021125,80.254118
+Kottur Gardens,13,172,neighbourhood,13.020631,80.244128
+Kotturpuram,13,172,suburb,13.01937,80.243551
+Labour Colony,13,170,neighbourhood,13.015472,80.209408
+Lakshmi Hayagriva Nagar,13,177,neighbourhood,12.985429,80.212138
+Little Mount,13,171,suburb,13.014186,80.226688
+Maduvankarai,13,174,locality,13.002022,80.210656
+MRC Nagar,13,173,suburb,13.019669,80.270652
+Nava Bharath Colony,13,181,neighbourhood,12.990005,80.266667
+Navaratna Gardens,13,170,locality,13.023086,80.201086
+New Colony,13,179,neighbourhood,12.98271,80.232297
+NGO Colony,13,177,neighbourhood,12.994895,80.20776
+Padmanabha Nagar,13,176,neighbourhood,13.004551,80.258729
+Parameswari Nagar,13,176,neighbourhood,13.002787,80.258125
+PTC Colony,13,182,neighbourhood,12.976383,80.256519
+Radhakrishnan Nagar,13,181,locality,12.994345,80.258691
+Raj Bhavan,13,174,neighbourhood,13.00794,80.226399
+Rajalakshmi Nagar,13,178,neighbourhood,12.985288,80.218743
+Ramakrishna Nagar,13,173,neighbourhood,13.024366,80.261062
+Seethapathy Nagar,13,179,neighbourhood,12.981951,80.227033
+Seshadripuram,13,179,neighbourhood,12.979839,80.230669
+Seva Nagar Velachery,13,179,neighbourhood,12.986411,80.229321
+Shastri Nagar,13,176,neighbourhood,12.998773,80.259912
+Sony Nagar,13,179,neighbourhood,12.98651,80.227991
+Srinagar Colony,13,171,neighbourhood,13.013467,80.230278
+Srinivasa Nagar,13,182,locality,12.974967,80.260008
+Sriram Nagar,13,172,neighbourhood,13.003549,80.244317
+Sundar Nagar,13,170,locality,13.016778,80.198731
+Tansi Nagar,13,179,neighbourhood,12.977458,80.223447
+Taramani,13,180,suburb,12.984907,80.240407
+Teachers Colony,13,182,locality,12.983369,80.266185
+Thiruvanmiyur,13,181,suburb,12.985895,80.264421
+Tiruvalluvar Nagar,13,182,locality,12.977056,80.262537
+TNHB Colony,13,177,neighbourhood,12.99142,80.212059
+Todhunter Nagar,13,171,neighbourhood,13.022615,80.230809
+Udhayam Nagar,13,179,neighbourhood,12.979168,80.23217
+Urur Kuppam,13,176,neighbourhood,13.004176,80.273289
+Valmiki Nagar,13,182,locality,12.98044,80.264558
+Vannanthurai,13,176,locality,12.996864,80.26161
+Varadapuram,13,172,neighbourhood,13.015421,80.245999
+Velachery,13,179,suburb,12.980165,80.222851
+Venkateswara Nagar,13,176,neighbourhood,13.00328,80.262057
+Venus Colony,13,179,neighbourhood,12.974395,80.227722
+VGP Selva Nagar,13,179,neighbourhood,12.971222,80.221103
+Vijaynagar,13,178,neighbourhood,12.975743,80.220988
+Vikram Sarabhai Industrial Estate,13,180,neighbourhood,12.980955,80.250875
+AGS Colony,14,183,neighbourhood,12.974592,80.256433
+Avvai Nagar,14,183,neighbourhood,12.977378,80.253883
+Balaji Nagar,14,169,neighbourhood,12.972164,80.190572
+Chettinad Enclave,14,188,locality,12.941661,80.201967
+DGI Layout,14,183,locality,12.967891,80.259011
+Elango Nagar,14,183,locality,12.971554,80.252379
+Govindaswamy Nagar,14,184,neighbourhood,12.96857,80.245916
+Isha Garden,14,191,neighbourhood,12.913822,80.202028
+Jalladampet,14,191,suburb,12.919753,80.201692
+Jayachandran Nagar,14,191,locality,12.921633,80.198788
+Jayendra Colony,14,183,neighbourhood,12.969828,80.248232
+Judge's Colony,14,183,neighbourhood,12.97596,80.248175
+Kamakoti Nagar,14,189,neighbourhood,12.941036,80.213268
+Kamatchi Nagar,14,189,neighbourhood,12.944583,80.215865
+Kandaswamy Nagar,14,185,neighbourhood,12.966178,80.254818
+Karpagambal Nagar,14,183,locality,12.973664,80.259637
+Karthikeyapuram,14,187,neighbourhood,12.962594,80.194524
+Kaveri Nagar,14,183,locality,12.970304,80.263756
+Kottivakkam,14,183,suburb,12.970505,80.261503
+Kuberan Nagar,14,188,neighbourhood,12.957493,80.206235
+Lakshmanaperumal Nagar,14,183,locality,12.971698,80.261648
+Madipakkam,14,188,suburb,12.961135,80.200129
+Madura Kali Nagar,14,187,neighbourhood,12.958032,80.193832
+Meenava Kuppam,14,183,locality,12.967702,80.264945
+MGR Nagar,14,183,neighbourhood,12.979583,80.249444
+Narayanapuram,14,189,suburb,12.941797,80.208384
+NATCO Colony,14,183,neighbourhood,12.97073,80.257008
+Natesan Colony,14,183,neighbourhood,12.973094,80.256686
+Nehru Nagar Industrial Estate,14,183,neighbourhood,12.974216,80.247542
+New Colony,14,183,locality,12.969327,80.258413
+Palavakkam,14,185,suburb,12.95999,80.256027
+Palkalai Nagar,14,185,locality,12.965504,80.259273
+Pallikaranai,14,190,suburb,12.930475,80.207769
+Park Square colony,14,187,neighbourhood,12.965665,80.193486
+Perungudi,14,184,suburb,12.971024,80.241805
+Puzhuthivakkam,14,169,suburb,12.969143,80.206263
+Ram Nagar,14,169,neighbourhood,12.965356,80.211813
+Ramalinga Nagar,14,169,neighbourhood,12.967594,80.205851
+Sadasiva Nagar,14,188,neighbourhood,12.965129,80.202854
+Sangam Colony,14,183,neighbourhood,12.967386,80.25582
+Sheela Nagar,14,188,neighbourhood,12.96505,80.202075
+Sri Krishna Enclave,14,183,locality,12.972542,80.265066
+Srinivasapuram,14,183,locality,12.972051,80.260487
+Swaminathan Nagar,14,183,neighbourhood,12.971352,80.254342
+Thiruvalluvar Nagar,14,185,neighbourhood,12.96261,80.247467
+Tirumalai Nagar,14,184,neighbourhood,12.971804,80.245578
+Ullagaram,14,168,suburb,12.976587,80.19672
+Union Carbide Colony,14,169,neighbourhood,12.97398,80.193148
+Venkateshpuram,14,183,neighbourhood,12.968983,80.252397
+Venkateshwara Nagar,14,183,locality,12.96737,80.260631
+Venkateshwara Nagar Colony,14,183,neighbourhood,12.976997,80.244625
+Injambakkam,15,196,suburb,12.918937,80.251295
+Kannagi Nagar,15,195,neighbourhood,12.927645,80.239667
+Karapakkam,15,197,suburb,12.911707,80.22772
+Metukuppam,15,,neighbourhood,12.93654,80.237423
+Neelankarai,15,192,suburb,12.945495,80.257469
+Panaiyur,15,,suburb,12.887855,80.245198
+Pebble Beach,15,,locality,12.900092,80.254284
+PTC Colony,15,,locality,12.934107,80.236152
+PVS Nagar,15,193,neighbourhood,12.947607,80.242015
+Sai Nagar,15,193,neighbourhood,12.95163,80.234471
+Secretariat Colony,15,,locality,12.938272,80.244006
+Shakti Nagar,15,193,locality,12.944972,80.240633
+Sholinganallur,15,197,suburb,12.893536,80.232063
+Srinivasa Nagar,15,193,neighbourhood,12.9503,80.246967
+Thoraipakkam,15,193,suburb,12.949176,80.240688
+Thuraipakkam,15,,suburb,12.938791,80.239933
+Uthandi,15,199,suburb,12.868768,80.247209

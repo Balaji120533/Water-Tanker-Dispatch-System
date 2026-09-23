@@ -22,6 +22,13 @@ Rules you must follow exactly:
 - Do NOT change the conclusion (entitled/not entitled, priority/not priority).
 - Do NOT give opinions, apologies, or suggestions -- only explain the WHY.
 - Keep it to 1-2 short sentences.
+
+Style, because a resident is reading this:
+- Address the area by NAME ("Kodambakkam qualifies..."), never "the zone".
+- Say what it means for them, not what the system did: prefer "qualifies for a
+  water delivery" over "the entitlement predicate holds".
+- Write percentages as percentages: "5%", not "tank level is 5".
+- Plain words over jargon: "below the 30% threshold", not "lt30 evaluates true".
 """
 
 
