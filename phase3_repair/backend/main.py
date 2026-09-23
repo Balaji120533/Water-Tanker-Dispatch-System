@@ -12,6 +12,8 @@ zero decision logic of its own.
 from __future__ import annotations
 import sys
 import os
+import threading
+import time
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "phase1_csp"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "phase0_entitlement"))
@@ -69,11 +71,29 @@ from conversation import (  # noqa: E402
 )
 from explain import explain_decision  # noqa: E402
 from parsing import VALID_ZONES  # noqa: E402
+from zone_registry import locality_point  # noqa: E402
 
-# Route polylines are precomputed/cached by phase2 (real A* over the
-# Chennai road graph) -- loading them here keeps the ~85MB graph out of
-# the request path entirely.
+# Filling point -> zone-centre routes, precomputed by phase2 (real A* over
+# the Chennai road graph). Used when a delivery has no reported locality.
 ROUTE_GEOMETRY = build_route_geometry()
+
+# Routes to the exact place a volunteer reported ("Arumbakkam", not the
+# centre of Zone 8) can't be precomputed, so the road graph is loaded here
+# too -- on a background thread, so the API is usable at once and the
+# planner simply becomes available a moment later.
+_planner = {"planner": None, "error": None}
+
+
+def _load_planner():
+    try:
+        from graph_loader import load_graph
+        from dynamic_route import RoutePlanner
+        _planner["planner"] = RoutePlanner(load_graph(), SOURCE_STATIONS)
+    except Exception as e:  # routing to localities degrades to zone centres
+        _planner["error"] = str(e)
+
+
+threading.Thread(target=_load_planner, daemon=True).start()
 
 # Fixed lookup table, NOT an LLM/NL parser (Rule 2: the LLM never decides
 # entitlement; it only ever produces structured facts). Phase 5 will
@@ -146,6 +166,7 @@ def _serialize_assignment(problem: CSPProblem, assignment: dict) -> dict:
             {"name": z.name, "need_liters": z.need_liters, "is_high_priority": z.is_high_priority}
             for z in problem.zones
         ],
+        "requests": _serialize_requests(),
     }
 
 
@@ -159,6 +180,19 @@ def generate_schedule():
 
     _state["problem"] = problem
     _state["assignment"] = solution
+    # A new schedule reuses the same (tanker, slot) cells for different
+    # zones, so yesterday's ticks would sit on today's deliveries.
+    _state["completed"] = set()
+
+    # Volunteer requests the engine already approved must survive a
+    # regenerate -- otherwise planning the day after a report arrives would
+    # silently drop it. Each missing zone is inserted by the same repair
+    # path as when the report first came in.
+    for session in _open_request_sessions():
+        zone = session.decision["zone_name"]
+        if _find_slot(zone) is None:
+            _insert_into_schedule(zone, session.decision["high_priority"])
+    solution = _state["assignment"]
 
     return {
         **_serialize_assignment(problem, solution),
@@ -182,7 +216,14 @@ def disrupt_breakdown(req: BreakdownRequest):
         raise HTTPException(status_code=404, detail=f"Unknown tanker '{req.tanker_id}'")
 
     broken = tanker_breakdown(problem, assignment, req.tanker_id)
-    repaired, diff, steps = run_repair(problem, broken, seed=1)
+    # Zones a volunteer has been told are coming must not be quietly
+    # dropped by the repair. If the remaining fleet genuinely cannot cover
+    # them all, fall back to the plain repair rather than failing outright;
+    # those requests then show as "pending" rather than vanishing.
+    promised = frozenset(s.decision["zone_name"] for s in _open_request_sessions())
+    repaired, diff, steps = run_repair(problem, dict(broken), seed=1, must_serve=promised)
+    if repaired is None and promised:
+        repaired, diff, steps = run_repair(problem, broken, seed=1)
 
     if repaired is None:
         raise HTTPException(status_code=500, detail="Repair failed to converge")
@@ -415,6 +456,110 @@ def _add_zone_to_problem(problem: CSPProblem, zone_name: str, high_priority: boo
             problem.domains[var] = [v for v in domain if v is not None] + [zone_name, None]
 
 
+# --- volunteer requests on the map ------------------------------------
+# A request is simply a chat session whose report the engine approved. The
+# CSP allocates by zone; what a request adds is WHERE in the zone the
+# water is needed, and the route there from the nearest filling point.
+
+def _open_request_sessions() -> list:
+    """Approved, entitled reports whose delivery hasn't happened yet."""
+    return sorted(
+        (s for s in _sessions.values()
+         if s.decision and s.decision["entitled"] and s.stage == SUBMITTED),
+        key=lambda s: s.created_at,
+    )
+
+
+def _request_point(session) -> tuple[list[float], str]:
+    """The reported place, or the zone centre if only a zone/ward was given."""
+    zone = session.decision["zone_name"]
+    point = locality_point(session.facts.get("locality"), zone)
+    if point is not None:
+        return list(point), "locality"
+    return list(ZONE_COORDS[zone]), "zone"
+
+
+def _request_route(session) -> dict | None:
+    """
+    Nearest filling point by road to the reported place, and the route.
+    Computed once per request and kept on the session. Before the road
+    graph has loaded, falls back to the precomputed zone-centre route.
+    """
+    cached = session.decision.get("route")
+    if cached and not cached.get("fallback"):
+        return cached
+
+    point, source = _request_point(session)
+    planner = _planner["planner"]
+    if planner is not None:
+        found = planner.nearest_filling_point(*point)
+        if found is not None:
+            session.decision["route"] = {
+                "station": found["station"], "distance_m": found["distance_m"],
+                "coords": found["coords"], "fallback": False,
+            }
+            return session.decision["route"]
+
+    station, route = nearest_station_to_zone(ROUTE_GEOMETRY, session.decision["zone_name"])
+    if route is None:
+        return None
+    session.decision["route"] = {
+        "station": station, "distance_m": route["distance_m"],
+        "coords": route["coords"], "fallback": True,
+    }
+    return session.decision["route"]
+
+
+def _request_state(session) -> tuple[str, dict | None]:
+    """Where an approved request stands: pending / scheduled / delivered / ..."""
+    zone = session.decision["zone_name"]
+    if session.stage == CLOSED:
+        return ("confirmed" if session.delivery_confirmed else "not_received"), session.decision.get("slot")
+    if session.stage == AWAITING_RECEIPT:
+        return "delivered", session.decision.get("slot")
+
+    # Re-read every time: a repair or a regenerate may have moved it.
+    slot = _find_slot(zone)
+    session.decision["slot"] = slot
+    if slot is None:
+        return "pending", None
+    if (slot["tanker_id"], slot["slot"]) in _state["completed"]:
+        session.stage = AWAITING_RECEIPT
+        session.remember("assistant", receipt_question(zone))
+        return "delivered", slot
+    return "scheduled", slot
+
+
+def _serialize_requests() -> list[dict]:
+    out = []
+    for s in sorted(_sessions.values(), key=lambda s: s.created_at):
+        if not (s.decision and s.decision["entitled"]):
+            continue
+        state, slot = _request_state(s)
+        point, source = _request_point(s)
+        route = _request_route(s) if state in ("pending", "scheduled") else s.decision.get("route")
+        out.append({
+            "id": s.session_id,
+            "zone_name": s.decision["zone_name"],
+            "zone_label": zone_display(s.decision["zone_name"]),
+            "area_label": area_display(s.facts),
+            "locality": s.facts.get("locality"),
+            "point": point,
+            "point_source": source,
+            "tank_level_percent": s.facts.get("tank_level_percent"),
+            "high_priority": s.decision["high_priority"],
+            "state": state,
+            "slot": slot,
+            "station": route["station"] if route else None,
+            "station_label": FILLING_POINT_NAMES.get(route["station"]) if route else None,
+            "station_coords": SOURCE_STATIONS.get(route["station"]) if route else None,
+            "route_coords": route["coords"] if route else [],
+            "distance_m": route["distance_m"] if route else None,
+            "route_to_zone_centre": bool(route and route.get("fallback")),
+        })
+    return out
+
+
 def _reply(session, text: str, **extra):
     session.remember("assistant", text)
     payload = {
@@ -503,6 +648,10 @@ def volunteer_chat(req: ChatMessage):
         # Approved -> now, and only now, ask the engine.
         session.decision = _decide(session.facts)
         session.stage = SUBMITTED if session.decision["entitled"] else CLOSED
+        if session.decision["entitled"]:
+            # Pin the reported place and find its nearest filling point now,
+            # so the dispatcher's map shows it on the next poll.
+            _request_route(session)
         return _reply(session, session.decision["explanation"])
 
     # ---- already submitted: keep the conversation useful ----
@@ -544,23 +693,11 @@ def volunteer_session(session_id: str):
     status = None
     if session.decision and session.decision["entitled"]:
         zone_name = session.decision["zone_name"]
-        slot = session.decision.get("slot") or _find_slot(zone_name)
-        # Keep the slot fresh: repair or a re-generate may have moved it.
-        session.decision["slot"] = slot
-
-        if session.stage == CLOSED:
-            state = "confirmed" if session.delivery_confirmed else "not_received"
-        elif slot is None:
-            state = "pending"
-        elif (slot["tanker_id"], slot["slot"]) in _state["completed"]:
-            state = "delivered"
-            if session.stage == SUBMITTED:
-                session.stage = AWAITING_RECEIPT
-                session.remember("assistant", receipt_question(zone_name))
-        else:
-            state = "scheduled"
+        state, slot = _request_state(session)
+        route = session.decision.get("route")
 
         status = {
+            "station_label": FILLING_POINT_NAMES.get(route["station"]) if route else None,
             "zone_name": zone_name,
             "area_label": area_display(session.facts),
             "high_priority": session.decision["high_priority"],
@@ -602,7 +739,22 @@ def driver_routes(tanker_id: str):
             continue
 
         zone = problem.zone_by_name(zone_name)
-        station, route = nearest_station_to_zone(ROUTE_GEOMETRY, zone_name)
+
+        # If a volunteer reported this zone, drive to the place they named
+        # (the earliest open report), from its nearest filling point by road.
+        # Otherwise, the precomputed route to the zone centre.
+        request = next(
+            (s for s in _open_request_sessions() if s.decision["zone_name"] == zone_name), None
+        )
+        if request is not None:
+            route = _request_route(request)
+            station = route["station"] if route else None
+            target, _source = _request_point(request)
+            drop_label = area_display(request.facts)
+        else:
+            station, route = nearest_station_to_zone(ROUTE_GEOMETRY, zone_name)
+            target = ZONE_COORDS.get(zone_name)
+            drop_label = zone_display(zone_name)
 
         deliveries.append(
             {
@@ -611,8 +763,9 @@ def driver_routes(tanker_id: str):
                 "need_liters": zone.need_liters,
                 "is_high_priority": zone.is_high_priority,
                 "completed": (tanker_id, slot) in _state["completed"],
-                "zone_coords": ZONE_COORDS.get(zone_name),
-                "zone_label": zone_display(zone_name),
+                "zone_coords": target,
+                "zone_label": drop_label,
+                "volunteer_request": request is not None,
                 "station_name": station,
                 "station_label": FILLING_POINT_NAMES.get(station, station),
                 "station_coords": SOURCE_STATIONS.get(station) if station else None,
@@ -663,7 +816,8 @@ def status():
     """
     problem, assignment = _state["problem"], _state["assignment"]
     if problem is None or assignment is None:
-        return {"schedule": None}
+        # Reports can arrive before the day is planned; show them anyway.
+        return {"schedule": None, "requests": _serialize_requests()}
     return _serialize_assignment(problem, assignment)
 
 

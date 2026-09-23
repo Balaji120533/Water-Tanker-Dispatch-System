@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MapContainer, TileLayer, Marker, Popup, CircleMarker } from "react-leaflet";
+import { MapContainer, TileLayer, Popup, CircleMarker, Polyline, Tooltip } from "react-leaflet";
 import {
   ZONE_COORDS,
   ZONE_LABELS,
@@ -30,7 +30,11 @@ const BASEMAPS = {
   },
 };
 
-export default function DispatchMap({ schedule, zones }) {
+export default function DispatchMap({ schedule, zones, requests = [] }) {
+  // Only requests still to be delivered get a route line; finished ones
+  // keep their pin so the dispatcher can see where water went.
+  const activeRequests = requests.filter((r) => r.state === "pending" || r.state === "scheduled");
+  const servingStations = new Set(activeRequests.map((r) => r.station).filter(Boolean));
   const [basemap, setBasemap] = useState("street");
   const highPriorityZones = new Set(zones.filter((z) => z.is_high_priority).map((z) => z.name));
   const entitledZones = new Set(zones.map((z) => z.name));
@@ -65,10 +69,55 @@ export default function DispatchMap({ schedule, zones }) {
           <CircleMarker
             key={name}
             center={pos}
-            radius={5}
-            pathOptions={{ color: "#2563eb", fillColor: "#2563eb", fillOpacity: 0.8 }}
+            radius={servingStations.has(name) ? 8 : 5}
+            pathOptions={{
+              color: servingStations.has(name) ? "#ffffff" : "#2563eb",
+              weight: servingStations.has(name) ? 3 : 1,
+              fillColor: "#2563eb",
+              fillOpacity: 0.9,
+            }}
           >
             <Popup>{FILLING_POINT_NAMES[name] || name}</Popup>
+          </CircleMarker>
+        ))}
+
+        {activeRequests.map(
+          (r) =>
+            r.route_coords.length > 1 && (
+              <Polyline
+                key={`route-${r.id}`}
+                positions={r.route_coords}
+                pathOptions={{ color: "#7c3aed", weight: 4, opacity: 0.85, dashArray: "8 6" }}
+              />
+            )
+        )}
+
+        {requests.map((r) => (
+          <CircleMarker
+            key={`req-${r.id}`}
+            center={r.point}
+            radius={10}
+            pathOptions={{ color: "#ffffff", weight: 3, fillColor: "#7c3aed", fillOpacity: 1 }}
+          >
+            <Tooltip permanent direction="top" offset={[0, -10]}>
+              {r.locality || r.zone_label}
+            </Tooltip>
+            <Popup>
+              <div className="text-sm">
+                <strong>{r.area_label}</strong>
+                <div>Volunteer report · tank {r.tank_level_percent}%</div>
+                {r.high_priority && <div className="text-red-600">High priority</div>}
+                <div>
+                  {r.slot ? `${r.slot.tanker_id}, slot ${r.slot.slot}` : "Not yet in a slot"} · {r.state}
+                </div>
+                {r.station_label && (
+                  <div>
+                    Refill at {r.station_label}
+                    {r.distance_m != null && ` (${(r.distance_m / 1000).toFixed(1)} km by road)`}
+                  </div>
+                )}
+              </div>
+            </Popup>
           </CircleMarker>
         ))}
 

@@ -91,8 +91,11 @@ On first run, Phase 2 downloads the Chennai road network from OpenStreetMap
    logic engine then rules, and you get a plain-language answer plus a live
    status card. Expand *What I understood* to see the extracted facts and the
    raw proof tree — evidence the LLM didn't decide anything.
+   Within ~3s the dispatcher's map pins the reported place, draws the route
+   from its nearest filling point by road, and highlights the schedule cell
+   the report was inserted into.
 3. **Driver** → pick the tanker serving a zone, see the shortest road route
-   drawn from its Metrowater filling point, tap *Mark delivered*.
+   from its Metrowater filling point to the reported place, tap *Mark delivered*.
 4. **Dispatcher** → within ~3s that cell shows a green ✓. The volunteer's chat
    asks whether the water actually arrived.
 5. **Dispatcher** → *Mark tanker unavailable*. Min-conflicts repairs the
@@ -104,7 +107,7 @@ On first run, Phase 2 downloads the Chennai road network from OpenStreetMap
 
 ```bash
 python scripts/demo.py          # runs every claim below end to end
-pytest                          # 155 tests across all phases
+pytest                          # 162 tests across all phases
 ```
 
 Individual pieces:

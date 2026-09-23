@@ -107,19 +107,31 @@ for _variant, _key in {
     _ZONE_NAMES[_variant] = ZONE_BY_KEY[_key]
 
 
-def _load_localities() -> dict[str, list[tuple[MetroZone, str, int | None]]]:
-    """normalised name -> [(zone, name as in OSM, ward), ...]"""
+def _load_localities():
+    """
+    Returns (by_name, points):
+      by_name: normalised name -> [(zone, name as in OSM, ward), ...]
+      points:  (name as in OSM, zone key) -> (lat, lon)
+    """
     table: dict[str, list] = {}
+    points: dict[tuple[str, str], tuple[float, float]] = {}
     with open(os.path.join(DATA_DIR, "localities.csv"), encoding="utf-8") as f:
         for r in csv.DictReader(f):
             ward = int(r["ward"]) if r["ward"] else None
-            table.setdefault(_normalise(r["name"]), []).append(
-                (ZONE_BY_NO[int(r["zone_no"])], r["name"], ward)
-            )
-    return table
+            zone = ZONE_BY_NO[int(r["zone_no"])]
+            table.setdefault(_normalise(r["name"]), []).append((zone, r["name"], ward))
+            points[(r["name"], zone.key)] = (float(r["lat"]), float(r["lon"]))
+    return table, points
 
 
-LOCALITIES = _load_localities()
+LOCALITIES, _LOCALITY_POINTS = _load_localities()
+
+
+def locality_point(name: str | None, zone_key: str) -> tuple[float, float] | None:
+    """Where a locality is on the map, e.g. ("Arumbakkam", "anna_nagar")."""
+    if not name:
+        return None
+    return _LOCALITY_POINTS.get((name, zone_key))
 
 # Common short forms OSM does not carry. Each points at an OSM locality
 # name, so the ZONE still comes from the boundary data, not from here.
