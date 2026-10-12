@@ -23,6 +23,8 @@ export default function App() {
   const [status, setStatus] = useState(null);
   const bottomRef = useRef(null);
   const askedReceiptRef = useRef(false);
+  // How many of the session's dispatch updates are already in the chat.
+  const seenNotesRef = useRef(0);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -43,6 +45,15 @@ export default function App() {
 
         setStatus(data.status);
         setStage(data.stage);
+
+        // Dispatch changed the schedule (a tanker broke down, the day was
+        // re-planned...): post each update into the chat exactly once.
+        const notes = data.notifications ?? [];
+        if (notes.length > seenNotesRef.current) {
+          const fresh = notes.slice(seenNotesRef.current);
+          seenNotesRef.current = notes.length;
+          setMessages((m) => [...m, ...fresh.map((n) => ({ role: "assistant", text: n.text, update: true }))]);
+        }
 
         // The backend asks for receipt confirmation once the driver marks
         // the delivery complete; surface that question in the chat once.
@@ -86,6 +97,12 @@ export default function App() {
           { role: "assistant", text: data.detail || "Something went wrong. Please try again." },
         ]);
       } else {
+        if (sessionId && data.session_id !== sessionId) {
+          // The last report was closed and this message started a new one.
+          askedReceiptRef.current = false;
+          seenNotesRef.current = 0;
+          setStatus(null);
+        }
         setSessionId(data.session_id);
         setStage(data.stage);
         setMessages((m) => [
@@ -120,7 +137,14 @@ export default function App() {
 
       <main className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
         {messages.map((m, i) => (
-          <Bubble key={i} role={m.role} text={m.text} decision={m.decision} facts={m.facts} />
+          <Bubble
+            key={i}
+            role={m.role}
+            text={m.text}
+            decision={m.decision}
+            facts={m.facts}
+            update={m.update}
+          />
         ))}
 
         {status && <StatusCard status={status} />}
@@ -186,7 +210,7 @@ export default function App() {
   );
 }
 
-function Bubble({ role, text, decision, facts, muted }) {
+function Bubble({ role, text, decision, facts, muted, update }) {
   const isUser = role === "user";
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
@@ -194,11 +218,18 @@ function Bubble({ role, text, decision, facts, muted }) {
         className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm whitespace-pre-line ${
           isUser
             ? "bg-blue-600 text-white rounded-br-sm"
+            : update
+            ? "bg-amber-50 text-amber-900 rounded-bl-sm border border-amber-200"
             : `bg-white text-slate-700 rounded-bl-sm border border-slate-200 ${
                 muted ? "italic text-slate-400" : ""
               }`
         }`}
       >
+        {update && (
+          <p className="text-[11px] font-semibold uppercase tracking-wide text-amber-600 mb-1">
+            Schedule update
+          </p>
+        )}
         {text}
 
         {decision && (

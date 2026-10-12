@@ -68,6 +68,7 @@ from conversation import (  # noqa: E402
     Session, COLLECTING, CONFIRMING, SUBMITTED, AWAITING_RECEIPT, CLOSED,
     ask_for_missing, confirmation_question, receipt_question, unknown_area_reply,
     ambiguous_area_question, zone_display, area_display,
+    short_area, scheduled_line, schedule_update_message,
 )
 from explain import explain_decision  # noqa: E402
 from parsing import VALID_ZONES  # noqa: E402
@@ -193,6 +194,7 @@ def generate_schedule():
         if _find_slot(zone) is None:
             _insert_into_schedule(zone, session.decision["high_priority"])
     solution = _state["assignment"]
+    _announce_changes("because dispatch re-planned today's schedule")
 
     return {
         **_serialize_assignment(problem, solution),
@@ -229,6 +231,7 @@ def disrupt_breakdown(req: BreakdownRequest):
         raise HTTPException(status_code=500, detail="Repair failed to converge")
 
     _state["assignment"] = repaired
+    _announce_changes(f"because tanker {req.tanker_id} is unavailable")
 
     return {
         **_serialize_assignment(problem, repaired),
@@ -525,9 +528,27 @@ def _request_state(session) -> tuple[str, dict | None]:
         return "pending", None
     if (slot["tanker_id"], slot["slot"]) in _state["completed"]:
         session.stage = AWAITING_RECEIPT
-        session.remember("assistant", receipt_question(zone))
+        session.remember("assistant", receipt_question(zone, session.facts.get("locality")))
         return "delivered", slot
     return "scheduled", slot
+
+
+def _announce_changes(reason: str) -> None:
+    """
+    After anything that changes the schedule, tell each waiting volunteer
+    whose delivery moved, in their chat.
+
+    Compares the slot each volunteer was last TOLD about with where the
+    schedule now puts their zone. Explicit rather than detected on polling,
+    so every message can say why ("because tanker T1 is unavailable").
+    """
+    for session in _open_request_sessions():
+        told = session.decision.get("announced_slot")
+        now = _find_slot(session.decision["zone_name"])
+        session.decision["slot"] = now
+        if now != told:
+            session.notify(schedule_update_message(short_area(session.facts), told, now, reason))
+            session.decision["announced_slot"] = now
 
 
 def _serialize_requests() -> list[dict]:
@@ -648,19 +669,32 @@ def volunteer_chat(req: ChatMessage):
         # Approved -> now, and only now, ask the engine.
         session.decision = _decide(session.facts)
         session.stage = SUBMITTED if session.decision["entitled"] else CLOSED
-        if session.decision["entitled"]:
-            # Pin the reported place and find its nearest filling point now,
-            # so the dispatcher's map shows it on the next poll.
-            _request_route(session)
-        return _reply(session, session.decision["explanation"])
+        if not session.decision["entitled"]:
+            return _reply(session, session.decision["explanation"])
+
+        # Fitting this zone in may have moved other volunteers' deliveries;
+        # they hear about it. This volunteer hears their own slot below.
+        own_slot = _find_slot(session.decision["zone_name"])
+        session.decision["announced_slot"] = own_slot
+        _announce_changes("to fit in another urgent report")
+        # Pin the reported place and find its nearest filling point now,
+        # so the dispatcher's map shows it on the next poll.
+        _request_route(session)
+        return _reply(session, f"{session.decision['explanation']}\n\n{scheduled_line(own_slot)}")
 
     # ---- already submitted: keep the conversation useful ----
-    if session.stage in (SUBMITTED, CLOSED):
-        if session.stage == SUBMITTED:
-            return _reply(session, "Your report is already in \u2014 you can see its status above. "
-                                   "I will ask you to confirm once the driver marks it delivered.")
-        return _reply(session, "That report is closed. Tell me your area and how much water is "
-                               "left to start a new one.")
+    if session.stage == SUBMITTED:
+        return _reply(session, "Your report is already in \u2014 you can see its status above. "
+                               "I will tell you here if dispatch changes it, and ask you to "
+                               "confirm once the driver marks it delivered.")
+
+    # ---- a finished report: this message starts a new one ----
+    if session.stage == CLOSED:
+        # A NEW session, not a reset of this one: the closed report stays on
+        # the dispatcher's list with its outcome, instead of being erased.
+        # The chat UI switches to the new session_id from the reply.
+        session = _get_session(None)
+        session.remember("user", message)
 
     # ---- collecting facts ----
     try:
@@ -703,7 +737,7 @@ def volunteer_session(session_id: str):
             "high_priority": session.decision["high_priority"],
             "slot": slot,
             "state": state,
-            "question": receipt_question(zone_name) if session.stage == AWAITING_RECEIPT else None,
+            "question": receipt_question(zone_name, session.facts.get("locality")) if session.stage == AWAITING_RECEIPT else None,
         }
 
     return {
@@ -712,6 +746,8 @@ def volunteer_session(session_id: str):
         "facts": session.facts,
         "decision": session.decision,
         "status": status,
+        # Unprompted messages (schedule changed); the UI shows each once.
+        "notifications": session.notifications,
     }
 
 
@@ -774,7 +810,11 @@ def driver_routes(tanker_id: str):
             }
         )
 
-    return {"tanker_id": tanker_id, "deliveries": deliveries}
+    # A broken-down tanker's domains are reduced to idle-only by repair.
+    unavailable = all(
+        problem.domains.get((tanker_id, s)) == [None] for s in range(problem.num_slots)
+    )
+    return {"tanker_id": tanker_id, "deliveries": deliveries, "unavailable": unavailable}
 
 
 class CompleteRequest(BaseModel):
@@ -844,6 +884,7 @@ def disrupt_urgent(req: UrgentRequest):
         raise HTTPException(status_code=500, detail="Repair failed to converge")
 
     _state["assignment"] = repaired
+    _announce_changes(f"to fit in an urgent delivery to {zone_display(req.zone_name)}")
 
     return {
         **_serialize_assignment(problem, repaired),

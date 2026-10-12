@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import RouteMap, { BASEMAPS } from "./RouteMap";
 
 const API_BASE = "http://localhost:8000";
@@ -11,15 +11,26 @@ export default function App() {
   const [basemap, setBasemap] = useState("street");
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
+  const [routeNotice, setRouteNotice] = useState(null);
+  // What the driver is currently looking at, to spot dispatch changes.
+  const signatureRef = useRef(null);
+
+  // One line per delivery: which slot, where to, from which filling point.
+  const signatureOf = (ds) =>
+    ds.map((d) => `${d.slot}:${d.zone_label}:${d.station_name}`).join("|");
 
   const loadRoute = async (id) => {
     setLoading(true);
     setError(null);
+    setRouteNotice(null);
     try {
       const res = await fetch(`${API_BASE}/api/driver/routes/${id}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail || "Could not load route.");
       setDeliveries(data.deliveries);
+      setUnavailable(Boolean(data.unavailable));
+      signatureRef.current = signatureOf(data.deliveries);
       // Default to the first delivery that isn't done yet.
       const next = data.deliveries.find((d) => !d.completed) ?? data.deliveries[0];
       setSelectedSlot(next ? next.slot : null);
@@ -34,6 +45,39 @@ export default function App() {
 
   useEffect(() => {
     loadRoute(tankerId);
+  }, [tankerId]);
+
+  // Dispatch can change this route at any time (a repair after another
+  // tanker breaks down, a re-planned day, an urgent insert), so re-check
+  // every few seconds and say so when it changes.
+  useEffect(() => {
+    const id = setInterval(async () => {
+      try {
+        const res = await fetch(`${API_BASE}/api/driver/routes/${tankerId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setError(null); // e.g. "No schedule generated yet" -- dispatch has since made one
+        setUnavailable(Boolean(data.unavailable));
+        const sig = signatureOf(data.deliveries);
+        setDeliveries(data.deliveries);
+        if (signatureRef.current === null) {
+          const next = data.deliveries.find((d) => !d.completed) ?? data.deliveries[0];
+          setSelectedSlot(next ? next.slot : null);
+        } else if (sig !== signatureRef.current) {
+          setRouteNotice("Dispatch has updated your route.");
+          // Keep the driver on the same slot if it still exists.
+          setSelectedSlot((cur) =>
+            data.deliveries.some((d) => d.slot === cur)
+              ? cur
+              : (data.deliveries.find((d) => !d.completed) ?? data.deliveries[0])?.slot ?? null
+          );
+        }
+        signatureRef.current = sig;
+      } catch {
+        // Offline for a moment -- keep showing the last known route.
+      }
+    }, 4000);
+    return () => clearInterval(id);
   }, [tankerId]);
 
   const toggleComplete = async (slot, completed) => {
@@ -84,6 +128,21 @@ export default function App() {
       {error && (
         <div className="mx-4 mt-3 p-3 bg-red-950 border border-red-800 text-red-300 text-sm rounded-md">
           {error}
+        </div>
+      )}
+
+      {unavailable && (
+        <div className="mx-4 mt-3 p-3 bg-red-950 border border-red-800 text-red-200 text-sm rounded-md">
+          Dispatch has marked {tankerId} unavailable. Its deliveries were moved to other tankers.
+        </div>
+      )}
+
+      {routeNotice && !unavailable && (
+        <div className="mx-4 mt-3 p-3 bg-amber-950 border border-amber-700 text-amber-200 text-sm rounded-md flex justify-between gap-3">
+          <span>{routeNotice}</span>
+          <button onClick={() => setRouteNotice(null)} className="text-amber-400 text-xs">
+            OK
+          </button>
         </div>
       )}
 

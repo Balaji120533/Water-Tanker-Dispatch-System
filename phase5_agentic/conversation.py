@@ -58,9 +58,16 @@ class Session:
     delivery_confirmed: bool | None = None
     created_at: float = field(default_factory=time.time)
     history: list = field(default_factory=list)
+    # Messages the system sends unprompted (the schedule changed), in order.
+    # The chat UI shows each one once, by position in this list.
+    notifications: list = field(default_factory=list)
 
     def remember(self, role: str, text: str) -> None:
         self.history.append({"role": role, "text": text, "at": time.time()})
+
+    def notify(self, text: str) -> None:
+        self.notifications.append({"id": len(self.notifications), "text": text, "at": time.time()})
+        self.remember("assistant", text)
 
     def missing_fields(self) -> list[str]:
         return [f for f in REQUIRED_FIELDS if self.facts.get(f) is None]
@@ -169,6 +176,41 @@ def confirmation_question(facts: dict) -> str:
     return line + "\n\nIs that correct?"
 
 
-def receipt_question(zone: str) -> str:
-    return (f"The driver has marked the delivery to {zone_display(zone)} as "
+def short_area(facts: dict) -> str:
+    """"Arumbakkam", or "Zone 8 Anna Nagar" when no locality was given."""
+    return facts.get("locality") or zone_display(facts["zone_name"])
+
+
+def _slot_text(slot: dict) -> str:
+    return f"tanker {slot['tanker_id']}, slot {slot['slot']}"
+
+
+def scheduled_line(slot: dict | None) -> str:
+    """Appended to the approval reply, so the volunteer hears the slot at once."""
+    if slot is None:
+        return ("Your report is on the dispatcher's list. It is not in a delivery slot "
+                "yet — I will tell you here as soon as it is.")
+    return f"It is scheduled for {_slot_text(slot)} today. I will tell you here if that changes."
+
+
+def schedule_update_message(area: str, old: dict | None, new: dict | None, reason: str) -> str:
+    """
+    Tell the volunteer their delivery changed because of something dispatch
+    did. A fixed template rather than the language model: this states a
+    schedule fact, and it must say exactly what the schedule says.
+    """
+    why = f" {reason}" if reason else ""
+    if old is None and new is not None:
+        return f"Good news — your delivery to {area} is now scheduled: {_slot_text(new)}."
+    if new is None:
+        return (f"Update from dispatch: your delivery to {area} has been taken off today's "
+                f"schedule{why}. Your report is still on the list, and I will tell you as soon "
+                "as it is rescheduled.")
+    return (f"Update from dispatch: your delivery to {area} has moved to {_slot_text(new)} "
+            f"(it was {_slot_text(old)}){why}.")
+
+
+def receipt_question(zone: str, place: str | None = None) -> str:
+    """`place` is the locality the volunteer named, when there was one."""
+    return (f"The driver has marked the delivery to {place or zone_display(zone)} as "
             "complete. Did the tanker actually arrive and fill your tank?")

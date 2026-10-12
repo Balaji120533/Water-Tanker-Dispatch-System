@@ -99,7 +99,9 @@ On first run, Phase 2 downloads the Chennai road network from OpenStreetMap
 4. **Dispatcher** → within ~3s that cell shows a green ✓. The volunteer's chat
    asks whether the water actually arrived.
 5. **Dispatcher** → *Mark tanker unavailable*. Min-conflicts repairs the
-   schedule and highlights only the cells that changed.
+   schedule and highlights only the cells that changed. Within a few seconds
+   the affected drivers' routes update, and any volunteer whose delivery moved
+   is told in their chat what changed and why.
 
 ---
 
@@ -107,7 +109,7 @@ On first run, Phase 2 downloads the Chennai road network from OpenStreetMap
 
 ```bash
 python scripts/demo.py          # runs every claim below end to end
-pytest                          # 162 tests across all phases
+pytest                          # 168 tests across all phases
 ```
 
 Individual pieces:

@@ -182,3 +182,49 @@ def test_ambiguous_answers_are_not_guessed():
 def test_case_and_punctuation_are_ignored():
     assert interpret_yes_no("  YES!  ") is True
     assert interpret_yes_no("No.") is False
+
+
+# --- dispatch changes announced in the chat -----------------------------
+
+from conversation import schedule_update_message, scheduled_line, short_area
+
+
+def test_moved_delivery_says_old_new_and_why():
+    msg = schedule_update_message(
+        "Arumbakkam", {"tanker_id": "T1", "slot": 1}, {"tanker_id": "T2", "slot": 1},
+        "because tanker T1 is unavailable",
+    )
+    assert "Arumbakkam" in msg
+    assert "tanker T2, slot 1" in msg and "tanker T1, slot 1" in msg
+    assert "because tanker T1 is unavailable" in msg
+
+
+def test_pending_report_getting_a_slot_is_good_news():
+    msg = schedule_update_message("Arumbakkam", None, {"tanker_id": "T3", "slot": 0}, "any reason")
+    assert msg.startswith("Good news")
+    assert "tanker T3, slot 0" in msg
+
+
+def test_dropped_delivery_says_it_is_still_on_the_list():
+    msg = schedule_update_message(
+        "Arumbakkam", {"tanker_id": "T1", "slot": 1}, None, "because tanker T1 is unavailable"
+    )
+    assert "taken off" in msg and "still on the list" in msg
+
+
+def test_approval_reply_states_the_slot_or_that_it_is_waiting():
+    assert "tanker T1, slot 1" in scheduled_line({"tanker_id": "T1", "slot": 1})
+    assert "not in a delivery slot yet" in scheduled_line(None)
+
+
+def test_short_area_prefers_the_locality():
+    assert short_area({"zone_name": "anna_nagar", "locality": "Arumbakkam"}) == "Arumbakkam"
+    assert short_area({"zone_name": "anna_nagar", "locality": None}) == "Zone 8 Anna Nagar"
+
+
+def test_notifications_are_numbered_and_kept_in_history():
+    s = Session()
+    s.notify("first")
+    s.notify("second")
+    assert [n["id"] for n in s.notifications] == [0, 1]
+    assert s.history[-1]["text"] == "second"
